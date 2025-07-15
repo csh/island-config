@@ -4,13 +4,16 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
+#if !UNITY_EDITOR
+using BepInEx.Bootstrap;
+#endif
+
 namespace IslandConfig.Controllers
 {
     public class ModSettingsWindowController : MonoBehaviour
     {
-        [Header("UI References")] [SerializeField]
-        private RectTransform modListContent;
-
+        [Header("UI References")] 
+        [SerializeField] private RectTransform modListContent;
         [SerializeField] private ModListEntryController modListEntryControllerPrefab;
         [SerializeField] private RectTransform settingsList;
         [SerializeField] private TMP_InputField searchInput;
@@ -32,25 +35,30 @@ namespace IslandConfig.Controllers
                 ClearModList();
 
             _allMods = GetDummyMods().ToList();
-            PopulateModList(GetDummyMods());
+            PopulateModList(_allMods);
         }
 #endif
 
-        private void Awake()
+        private void OnEnable()
         {
-            ClearModList();
-            
+            searchInput?.onValueChanged.AddListener(OnSearchInputUpdated);
+
+            // ReSharper disable once JoinDeclarationAndInitializer
+            IEnumerable<(string modGuid, string modName)> modList;
 #if UNITY_EDITOR
-            _allMods = GetDummyMods().ToList();
-            PopulateModList(_allMods);
+            modList = GetDummyMods();
 #else
             IslandConfig.GenerateConfigs();
-#endif
 
-            searchInput?.onValueChanged.AddListener(OnSearchInputUpdated);
+            modList = Chainloader.PluginInfos.Values.Where(pi =>
+                    IslandConfig.ConfigsByPlugin.TryGetValue(pi, out var wrappers) && wrappers.Count > 0)
+                .Select(pi => (pi.Metadata.GUID, pi.Metadata.Name));
+#endif
+            _allMods = modList.OrderBy(tuple => tuple.modName, StringComparer.OrdinalIgnoreCase).ToList();
+            PopulateModList(_allMods);
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             searchInput?.onValueChanged.RemoveListener(OnSearchInputUpdated);
         }
@@ -58,7 +66,7 @@ namespace IslandConfig.Controllers
         private void ClearModList()
         {
             Debug.Log("Attempting to clear mod list");
-            for (var i = modListContent.childCount-1; i >= 0; i--)
+            for (var i = modListContent.childCount - 1; i >= 0; i--)
             {
                 var child = modListContent.GetChild(i).gameObject;
 #if UNITY_EDITOR
@@ -69,7 +77,7 @@ namespace IslandConfig.Controllers
             }
         }
 
-        public void PopulateModList(IEnumerable<(string modGuid, string modName)> modList)
+        private void PopulateModList(IEnumerable<(string modGuid, string modName)> modList)
         {
             ClearModList();
 
@@ -92,7 +100,7 @@ namespace IslandConfig.Controllers
 
             var filtered = _allMods.Where(x =>
                 x.modName.IndexOf(modName, StringComparison.OrdinalIgnoreCase) != -1);
-            
+
             PopulateModList(filtered);
         }
 
