@@ -15,6 +15,34 @@ namespace IslandConfig
     {
         internal static readonly ConditionalWeakTable<PluginInfo, List<BepInConfigWrapper>> ConfigsByPlugin = new();
         
+        private static bool _generatedConfigs;
+
+        internal static void GenerateConfigs()
+        {
+            if (_generatedConfigs) return;
+            
+            foreach (var pluginInfo in Chainloader.PluginInfos.Values)
+            {
+                if (pluginInfo.Instance.Config.Count < 1)
+                {
+                    Debug.Log($"[IslandConfig] Plugin {pluginInfo.Metadata.Name} has no configs to generate entries for");
+                    continue;
+                }
+
+                if (ConfigsByPlugin.TryGetValue(pluginInfo, out _))
+                {
+                    Debug.Log($"[IslandConfig] Plugin {pluginInfo.Metadata.Name} has already registered configuration");
+                    continue;
+                }
+                
+                Debug.Log($"[IslandConfig] Generating configs for {pluginInfo.Metadata.Name}");
+                var wrapped = ConfigGenerator.Generate(pluginInfo, pluginInfo.Instance.Config);
+                ConfigsByPlugin.Add(pluginInfo, wrapped.ToList());
+            }
+            
+            _generatedConfigs = true;
+        }
+        
         public static void Register(Action<ConfigBuilder> build)
         {
             var caller = Assembly.GetCallingAssembly();

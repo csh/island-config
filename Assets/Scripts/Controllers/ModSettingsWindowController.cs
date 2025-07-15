@@ -39,9 +39,12 @@ namespace IslandConfig.Controllers
         private void Awake()
         {
             ClearModList();
-
+            
 #if UNITY_EDITOR
             _allMods = GetDummyMods().ToList();
+            PopulateModList(_allMods);
+#else
+            IslandConfig.GenerateConfigs();
 #endif
 
             searchInput?.onValueChanged.AddListener(OnSearchInputUpdated);
@@ -55,7 +58,7 @@ namespace IslandConfig.Controllers
         private void ClearModList()
         {
             Debug.Log("Attempting to clear mod list");
-            for (var i = 0; i < modListContent.childCount; i++)
+            for (var i = modListContent.childCount-1; i >= 0; i--)
             {
                 var child = modListContent.GetChild(i).gameObject;
 #if UNITY_EDITOR

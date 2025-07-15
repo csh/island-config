@@ -617,7 +617,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modListContent: {fileID: 1690564336444156978}
-  modListEntryPrefab: {fileID: 2644756673296159460, guid: ac6d8fc924564b44fac3c3a40f108929, type: 3}
+  modListEntryControllerPrefab: {fileID: 2644756673296159460, guid: ac6d8fc924564b44fac3c3a40f108929, type: 3}
   settingsList: {fileID: 7291082436422310255}
   searchInput: {fileID: 7736253809799997629}
 --- !u!1 &2930778062368562972

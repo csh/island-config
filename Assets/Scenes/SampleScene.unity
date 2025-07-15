@@ -321,10 +321,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1084492246869782215, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
-      propertyPath: searchInput
-      value: 
-      objectReference: {fileID: 1760109858}
-    - target: {fileID: 1084492246869782215, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
       propertyPath: populateDebugEntries
       value: 0
       objectReference: {fileID: 0}
@@ -804,17 +800,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1760109858 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7736253809799997629, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
-  m_PrefabInstance: {fileID: 354440293}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

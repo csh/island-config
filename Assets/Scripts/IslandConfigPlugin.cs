@@ -13,7 +13,7 @@ namespace IslandConfig
     }
     
     [BepInPlugin(IslandConfigPluginInfo.Guid, IslandConfigPluginInfo.Name, IslandConfigPluginInfo.Version)]
-    public class IslandConfigPlugin : BaseUnityPlugin
+    internal class IslandConfigPlugin : BaseUnityPlugin
     {
         internal new static ManualLogSource Logger;
         

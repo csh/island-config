@@ -8,7 +8,7 @@ namespace IslandConfig
 {
     internal static class ConfigGenerator
     {
-        internal  static IEnumerable<BepInConfigWrapper> Generate(PluginInfo pluginInfo, ConfigFile config)
+        internal static IEnumerable<BepInConfigWrapper> Generate(PluginInfo pluginInfo, ConfigFile config)
         {
             foreach (var definition in config.Keys)
             {

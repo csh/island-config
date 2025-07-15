@@ -9,20 +9,38 @@ namespace IslandConfig.UI
     {
         protected readonly ConfigEntryBase ConfigEntry;
 
-        protected object _currentBoxedValue;
+        protected object CurrentBoxedValue;
 
         private string _customName;
         private string _customSection;
         private string _customDescription;
-        
+        private WeakReference<PluginInfo> _owner;
+
         internal BepInConfigWrapper(ConfigEntryBase configEntry)
         {
             ConfigEntry = configEntry;
-            _currentBoxedValue = configEntry.BoxedValue;
+            CurrentBoxedValue = configEntry.BoxedValue;
         }
-        
-        internal PluginInfo Owner { get; set; }
-        
+
+        internal PluginInfo Owner
+        {
+            get
+            {
+                if (_owner.TryGetTarget(out var owner))
+                {
+                    return owner;
+                }
+                throw new InvalidOperationException("Owner of a configuration item has gone out of scope");
+            }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException(nameof(value));
+                
+                _owner = new WeakReference<PluginInfo>(value);
+            }
+        }
+
         internal string Name
         {
             get => _customName ?? ConfigEntry.Definition.Section;
@@ -41,20 +59,20 @@ namespace IslandConfig.UI
             set => _customDescription = value;
         }
 
-        internal bool IsDirty => Equals(_currentBoxedValue, ConfigEntry.BoxedValue) == false;
+        internal bool IsDirty => Equals(CurrentBoxedValue, ConfigEntry.BoxedValue) == false;
         
         internal abstract GameObject CreatePrefab();
 
         internal void Commit()
         {
             if (ConfigEntry is null) return;
-            ConfigEntry.BoxedValue = _currentBoxedValue;
+            ConfigEntry.BoxedValue = CurrentBoxedValue;
         }
 
         internal void Cancel()
         {
             if (ConfigEntry is null) return;
-            _currentBoxedValue = ConfigEntry.BoxedValue;
+            CurrentBoxedValue = ConfigEntry.BoxedValue;
         }
 
         internal string GetGameObjectName()
@@ -79,7 +97,7 @@ namespace IslandConfig.UI
 
         private void OnSettingChanged(object sender, EventArgs e)
         {
-            _currentBoxedValue = Value;
+            CurrentBoxedValue = Value;
         }
 
         internal override GameObject CreatePrefab()
