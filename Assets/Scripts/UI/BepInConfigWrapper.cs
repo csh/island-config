@@ -10,6 +10,10 @@ namespace IslandConfig.UI
         protected readonly ConfigEntryBase ConfigEntry;
 
         protected object _currentBoxedValue;
+
+        private string _customName;
+        private string _customSection;
+        private string _customDescription;
         
         internal BepInConfigWrapper(ConfigEntryBase configEntry)
         {
@@ -18,9 +22,25 @@ namespace IslandConfig.UI
         }
         
         internal PluginInfo Owner { get; set; }
-        internal string Name => ConfigEntry.Definition.Section;
-        internal string Section => ConfigEntry.Definition.Section;
-        internal string Description => ConfigEntry.Description?.Description ?? string.Empty;
+        
+        internal string Name
+        {
+            get => _customName ?? ConfigEntry.Definition.Section;
+            set => _customName = value;
+        }
+
+        internal string Section
+        {
+            get => _customSection ?? ConfigEntry.Definition.Section;
+            set => _customSection = value;
+        }
+
+        internal string Description
+        {
+            get => _customDescription ?? ConfigEntry.Description?.Description ?? string.Empty;
+            set => _customDescription = value;
+        }
+
         internal bool IsDirty => Equals(_currentBoxedValue, ConfigEntry.BoxedValue) == false;
         
         internal abstract GameObject CreatePrefab();

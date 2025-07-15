@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace IslandConfig.Controllers
+namespace IslandConfig.Controllers.UI
 {
     internal class SliderControllerScript : MonoBehaviour
     {

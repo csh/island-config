@@ -5,7 +5,7 @@ using BepInEx.Configuration;
 using TMPro;
 using UnityEngine;
 
-namespace IslandConfig.Controllers
+namespace IslandConfig.Controllers.UI
 {
     internal class EnumDropdownController : MonoBehaviour
     {

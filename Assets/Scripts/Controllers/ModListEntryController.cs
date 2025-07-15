@@ -3,10 +3,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace IslandConfig
+namespace IslandConfig.Controllers
 {
     [DisallowMultipleComponent]
-    public class ModListEntry : MonoBehaviour
+    public class ModListEntryController : MonoBehaviour
     {
         [Header("UI References")]
         [SerializeField] private TMP_Text label;

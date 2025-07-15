@@ -4,14 +4,14 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-namespace IslandConfig
+namespace IslandConfig.Controllers
 {
     public class ModSettingsWindowController : MonoBehaviour
     {
         [Header("UI References")] [SerializeField]
         private RectTransform modListContent;
 
-        [SerializeField] private ModListEntry modListEntryPrefab;
+        [SerializeField] private ModListEntryController modListEntryControllerPrefab;
         [SerializeField] private RectTransform settingsList;
         [SerializeField] private TMP_InputField searchInput;
 
@@ -73,7 +73,7 @@ namespace IslandConfig
             Debug.Log("Populating mod list");
             foreach (var (modGuid, modName) in modList)
             {
-                var entry = Instantiate(modListEntryPrefab, modListContent);
+                var entry = Instantiate(modListEntryControllerPrefab, modListContent);
                 entry.Initialize(modGuid, modName);
                 entry.OnClicked += OnModSelected;
             }
