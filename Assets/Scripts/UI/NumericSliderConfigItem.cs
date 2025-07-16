@@ -1,5 +1,6 @@
 ﻿using System;
 using BepInEx.Configuration;
+using IslandConfig.Controllers.UI;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -82,14 +83,17 @@ namespace IslandConfig.UI
             remove => ConfigEntry.SettingChanged -= value;
         }
         
-#if UNITY_EDITOR
         internal override GameObject CreatePrefab()
         {
-            var obj = Object.Instantiate(IslandConfigAssets.EditorSliderPrefab);
-            obj.Initialize(this);
-            return obj.gameObject;
-        }
+#if UNITY_EDITOR
+            var prefab = Object.Instantiate(IslandConfigAssets.EditorSliderPrefab.gameObject);
+#else
+            var prefab = Object.Instantiate(IslandConfigAssets.SliderPrefab);
 #endif
+            var controller = prefab.GetComponent<SliderControllerScript>();
+            controller.Initialize(this);
+            return prefab.gameObject;
+        }
     }
 
     public class FloatSliderConfigItem : NumericSliderConfigItem<float>

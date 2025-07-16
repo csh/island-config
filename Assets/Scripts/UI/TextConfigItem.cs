@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using IslandConfig.Controllers.UI;
 using UnityEngine;
 
 namespace IslandConfig.UI
@@ -9,13 +10,16 @@ namespace IslandConfig.UI
         {
         }
         
-#if UNITY_EDITOR
         internal override GameObject CreatePrefab()
         {
-            var obj = Object.Instantiate(IslandConfigAssets.EditorTextPrefab);
-            obj.Initialize(this);
-            return obj.gameObject;
-        }
+#if UNITY_EDITOR
+            var prefab = Object.Instantiate(IslandConfigAssets.EditorTextPrefab.gameObject);
+#else
+            var prefab = Object.Instantiate(IslandConfigAssets.TextPrefab);
 #endif
+            var controller = prefab.GetComponent<TextControllerScript>();
+            controller.Initialize(this);
+            return prefab.gameObject;
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BepInEx.Configuration;
 using UnityEngine;
+using IslandConfig.Controllers.UI;
 
 namespace IslandConfig.UI
 {
@@ -8,14 +9,17 @@ namespace IslandConfig.UI
         public CheckboxConfigItem(ConfigEntry<bool> configEntry) : base(configEntry)
         {
         }
-        
-#if UNITY_EDITOR
+
         internal override GameObject CreatePrefab()
         {
-            var obj = Object.Instantiate(IslandConfigAssets.EditorCheckboxPrefab);
-            obj.Initialize(this);    
-            return obj.gameObject;
-        }
+#if UNITY_EDITOR
+            var prefab = Object.Instantiate(IslandConfigAssets.EditorCheckboxPrefab.gameObject);
+#else
+            var prefab = Object.Instantiate(IslandConfigAssets.CheckboxPrefab);
 #endif
+            var controller = prefab.GetComponent<CheckboxControllerScript>();
+            controller.Initialize(this);
+            return prefab;
+        }
     }
 }
