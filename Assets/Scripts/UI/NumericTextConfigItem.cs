@@ -2,6 +2,7 @@
 using System.Globalization;
 using BepInEx.Configuration;
 using IslandConfig.Controllers.UI;
+using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -41,7 +42,7 @@ namespace IslandConfig.UI
 
         public abstract bool ValidateInput(string value);
 
-        internal override GameObject CreatePrefab()
+        internal override GameObject CreatePrefab(TextMeshProUGUI hoverText)
         {
 #if UNITY_EDITOR
             var prefab = Object.Instantiate(IslandConfigAssets.EditorTextPrefab).gameObject;
@@ -49,7 +50,7 @@ namespace IslandConfig.UI
             var prefab = Object.Instantiate(IslandConfigAssets.TextPrefab);
 #endif
             var controller = prefab.GetComponent<TextControllerScript>();
-            controller.Initialize(this);
+            controller.Initialize(this, hoverText);
             return prefab.gameObject;
         }
     }

@@ -2,21 +2,24 @@ using System;
 using IslandConfig.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace IslandConfig.Controllers.UI
 {
-    internal class TextControllerScript : MonoBehaviour
+    internal class TextControllerScript : MonoBehaviour, IPointerEnterHandler
     {
         [Header("UI References")] 
         [SerializeField] private TMP_InputField textInput;
         [SerializeField] private TextMeshProUGUI label;
+        [SerializeField] private TextMeshProUGUI hoverText;
 
         private ITextInputDefinition _definition;
         private Color _defaultTextColour;
         
-        public void Initialize(ITextInputDefinition definition)
+        public void Initialize(ITextInputDefinition definition, TextMeshProUGUI hoverTextTarget)
         {
             _definition = definition ?? throw new ArgumentNullException(nameof(definition));
+            hoverText = hoverTextTarget;
             label.text = definition.Name;
             textInput.SetTextWithoutNotify(definition.Value);
             definition.SettingChanged += OnConfigEntryChanged;
@@ -62,6 +65,12 @@ namespace IslandConfig.Controllers.UI
             {
                 _definition.SettingChanged -= OnConfigEntryChanged;
             }
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (hoverText is null) return;
+            hoverText.text = _definition.Description ?? "No description provided.";
         }
     }
 }

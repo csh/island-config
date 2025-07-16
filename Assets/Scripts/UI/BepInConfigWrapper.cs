@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Text;
 using BepInEx;
 using BepInEx.Configuration;
+using TMPro;
 using UnityEngine;
 
 namespace IslandConfig.UI
@@ -66,13 +68,34 @@ namespace IslandConfig.UI
 
         internal string Description
         {
-            get => _customDescription ?? ConfigEntry.Description?.Description ?? string.Empty;
+            get
+            {
+                var desc = _customDescription ?? ConfigEntry.Description?.Description;
+                if (string.IsNullOrEmpty(desc)) return "No description provided.";
+                
+                var builder = new StringBuilder();
+                builder.AppendLine(desc);
+
+                if (ConfigEntry.Description?.AcceptableValues is not { } acceptable) return builder.ToString();
+                
+                var acceptableValuesDescription = acceptable.ToDescriptionString();
+                
+                // An *attempt* at guarding against potential BepInEx changes.
+                // This is probably fine.
+                if (acceptableValuesDescription[0] == '#')
+                {
+                    acceptableValuesDescription = acceptableValuesDescription[1..].TrimStart();
+                }
+                builder.AppendLine(acceptableValuesDescription);
+
+                return builder.ToString();
+            }
             set => _customDescription = value;
         }
 
         internal bool IsDirty => Equals(CurrentBoxedValue, ConfigEntry.BoxedValue) == false;
         
-        internal abstract GameObject CreatePrefab();
+        internal abstract GameObject CreatePrefab(TextMeshProUGUI hoverText);
 
         internal void Commit()
         {
@@ -119,7 +142,7 @@ namespace IslandConfig.UI
             CurrentBoxedValue = ConfigEntry.BoxedValue;
         }
 
-        internal override GameObject CreatePrefab()
+        internal override GameObject CreatePrefab(TextMeshProUGUI hoverText)
         {
             throw new NotImplementedException("TODO: Prefab loading and instantiation");
         }

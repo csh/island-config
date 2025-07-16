@@ -2,15 +2,17 @@ using System;
 using IslandConfig.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace IslandConfig.Controllers.UI
 {
-    internal class SliderControllerScript : MonoBehaviour
+    internal class SliderControllerScript : MonoBehaviour, IPointerEnterHandler
     {
         [Header("UI References")] 
         [SerializeField] private Slider slider;
         [SerializeField] private TextMeshProUGUI label;
+        [SerializeField] private TextMeshProUGUI hoverText;
         
 #if UNITY_EDITOR
         [Header("Debugging")]
@@ -28,10 +30,10 @@ namespace IslandConfig.Controllers.UI
 
         private INumericSliderDefinition _sliderDefinition;
 
-        public void Initialize(INumericSliderDefinition entry)
+        public void Initialize(INumericSliderDefinition entry, TextMeshProUGUI hoverTextTarget)
         {
             _sliderDefinition = entry ?? throw new ArgumentNullException(nameof(entry));
-
+            hoverText = hoverTextTarget;
             label.text = entry.Name;
             slider.minValue = entry.Min;
             slider.maxValue = entry.Max;
@@ -68,6 +70,12 @@ namespace IslandConfig.Controllers.UI
         {
             if (_sliderDefinition is null || Mathf.Approximately(_sliderDefinition.FloatValue, value)) return;
             _sliderDefinition.FloatValue = value;
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (hoverText is null) return;
+            hoverText.text = _sliderDefinition.Description ?? "No description provided.";
         }
     }
 }

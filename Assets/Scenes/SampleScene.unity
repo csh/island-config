@@ -336,6 +336,10 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2421106540664920586, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
+      propertyPath: m_Value
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2537780774353506889, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
       propertyPath: m_Name
       value: Mod Settings Window
@@ -390,6 +394,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3791954626859379379, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
       propertyPath: m_Size
+      value: 0.99999994
+      objectReference: {fileID: 0}
+    - target: {fileID: 3791954626859379379, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
+      propertyPath: m_Value
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5895935395577555490, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
@@ -511,6 +519,14 @@ PrefabInstance:
     - target: {fileID: 7291082436422310255, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7547566676377684047, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
+      propertyPath: m_MinHeight
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7547566676377684047, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
+      propertyPath: m_PreferredHeight
+      value: 26
       objectReference: {fileID: 0}
     - target: {fileID: 8706022545946819896, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
       propertyPath: m_AnchorMax.y

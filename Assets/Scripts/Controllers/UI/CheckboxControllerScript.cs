@@ -3,15 +3,17 @@ using BepInEx.Configuration;
 using IslandConfig.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace IslandConfig.Controllers.UI
 {
-    public class CheckboxControllerScript : MonoBehaviour
+    public class CheckboxControllerScript : MonoBehaviour, IPointerEnterHandler
     {
         [Header("UI References")] 
         [SerializeField] private Toggle toggle;
         [SerializeField] private TextMeshProUGUI label;
+        [SerializeField] private TextMeshProUGUI hoverText;
         
 #if UNITY_EDITOR
         [Header("Debugging")]
@@ -37,10 +39,10 @@ namespace IslandConfig.Controllers.UI
 
         private CheckboxConfigItem _entry;
 
-        public void Initialize(CheckboxConfigItem entry)
+        public void Initialize(CheckboxConfigItem entry, TextMeshProUGUI hoverTextTarget)
         {
             _entry = entry ?? throw new ArgumentNullException(nameof(entry));
-
+            hoverText = hoverTextTarget;
             label.text = entry.Name;
             toggle.isOn = entry.Value;
             entry.ConfigEntry.SettingChanged += OnSettingChanged;
@@ -74,6 +76,12 @@ namespace IslandConfig.Controllers.UI
             {
                 _entry.ConfigEntry.SettingChanged -= OnSettingChanged;
             }
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (hoverText is null) return;
+            hoverText.text = _entry.Description ?? "No description provided.";
         }
     }
 }

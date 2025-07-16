@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
 using IslandConfig.Controllers.UI;
+using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -25,7 +26,7 @@ namespace IslandConfig.UI
             Options = new List<T>();
         }
 
-        internal override GameObject CreatePrefab()
+        internal override GameObject CreatePrefab(TextMeshProUGUI hoverText)
         {
 #if UNITY_EDITOR
             var prefab = Object.Instantiate(IslandConfigAssets.EditorDropdownPrefab).gameObject;
@@ -33,7 +34,7 @@ namespace IslandConfig.UI
             var prefab = Object.Instantiate(IslandConfigAssets.DropdownPrefab);
 #endif
             var controller = prefab.GetComponent<DropdownControllerScript>();
-            controller.Initialize(this);
+            controller.Initialize(this, hoverText);
             return prefab.gameObject;
         }
 

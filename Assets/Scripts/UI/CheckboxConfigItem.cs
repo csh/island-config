@@ -1,6 +1,7 @@
 ﻿using BepInEx.Configuration;
 using UnityEngine;
 using IslandConfig.Controllers.UI;
+using TMPro;
 
 namespace IslandConfig.UI
 {
@@ -10,7 +11,7 @@ namespace IslandConfig.UI
         {
         }
 
-        internal override GameObject CreatePrefab()
+        internal override GameObject CreatePrefab(TextMeshProUGUI hoverText)
         {
 #if UNITY_EDITOR
             var prefab = Object.Instantiate(IslandConfigAssets.EditorCheckboxPrefab).gameObject;
@@ -18,7 +19,7 @@ namespace IslandConfig.UI
             var prefab = Object.Instantiate(IslandConfigAssets.CheckboxPrefab);
 #endif
             var controller = prefab.GetComponent<CheckboxControllerScript>();
-            controller.Initialize(this);
+            controller.Initialize(this, hoverText);
             return prefab;
         }
     }

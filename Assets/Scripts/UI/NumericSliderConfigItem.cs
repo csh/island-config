@@ -1,6 +1,7 @@
 ﻿using System;
 using BepInEx.Configuration;
 using IslandConfig.Controllers.UI;
+using TMPro;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -79,7 +80,7 @@ namespace IslandConfig.UI
             remove => ConfigEntry.SettingChanged -= value;
         }
         
-        internal override GameObject CreatePrefab()
+        internal override GameObject CreatePrefab(TextMeshProUGUI hoverText)
         {
 #if UNITY_EDITOR
             var prefab = Object.Instantiate(IslandConfigAssets.EditorSliderPrefab).gameObject;
@@ -87,7 +88,7 @@ namespace IslandConfig.UI
             var prefab = Object.Instantiate(IslandConfigAssets.SliderPrefab);
 #endif
             var controller = prefab.GetComponent<SliderControllerScript>();
-            controller.Initialize(this);
+            controller.Initialize(this, hoverText);
             return prefab.gameObject;
         }
     }
