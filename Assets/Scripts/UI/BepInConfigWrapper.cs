@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace IslandConfig.UI
 {
-    public abstract class BepInConfigWrapper
+    public abstract class BepInConfigWrapper : IDisposable
     {
         protected object CurrentBoxedValue;
         private readonly WeakReference<ConfigEntryBase> _configEntry;
@@ -97,10 +97,14 @@ namespace IslandConfig.UI
         {
             return $"{Section}.{Name}";
         }
+
+        public abstract void Dispose();
     }
 
     public abstract class BepInConfigWrapper<T> : BepInConfigWrapper
     {
+        private bool _disposed;
+        
         protected BepInConfigWrapper(ConfigEntry<T> configEntry) : base(configEntry)
         {
             if (configEntry is not null)
@@ -127,12 +131,22 @@ namespace IslandConfig.UI
             throw new NotImplementedException("TODO: Prefab loading and instantiation");
         }
 
-        ~BepInConfigWrapper()
+        public override void Dispose()
         {
+            if (_disposed) return;
+            _disposed = true;
+            
             if (ConfigEntry is not null)
             {
                 ConfigEntry.SettingChanged -= OnSettingChanged;
             }
+            
+            GC.SuppressFinalize(this);
+        }
+
+        ~BepInConfigWrapper()
+        {
+            Dispose();
         }
     }
 }

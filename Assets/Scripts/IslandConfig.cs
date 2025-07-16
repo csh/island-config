@@ -76,6 +76,19 @@ namespace IslandConfig
                 Chainloader.PluginInfos.Values.FirstOrDefault(pluginInfos =>
                     pluginInfos.Instance.GetType().Assembly == caller);
             if (pluginInfo is null) return;
+            if (!ConfigsByPlugin.TryGetValue(pluginInfo, out var configs)) return;
+            foreach (var wrapper in configs)
+            {
+                try
+                {
+                    wrapper.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    IslandConfigPlugin.Logger?.LogError("Failed to unregister event handlers for config wrapper");
+                    IslandConfigPlugin.Logger?.LogError(ex);
+                }
+            }
             ConfigsByPlugin.Remove(pluginInfo);
         }
     }
