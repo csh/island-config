@@ -43,7 +43,7 @@ namespace IslandConfig.UI
 
         internal string Name
         {
-            get => _customName ?? ConfigEntry.Definition.Section;
+            get => _customName ?? ConfigEntry.Definition.Key;
             set => _customName = value;
         }
 
