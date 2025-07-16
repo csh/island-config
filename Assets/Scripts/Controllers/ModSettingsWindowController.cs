@@ -29,7 +29,7 @@ namespace IslandConfig.Controllers
 #if UNITY_EDITOR
         private static IEnumerable<(string modGuid, string modName)> GetDummyMods()
         {
-            yield return ("com.smrkn.island-config", "IslandConfig");
+            yield return (IslandConfigPluginInfo.Guid, IslandConfigPluginInfo.Name);
             yield return ("com.smrkn.debug-mod-1", "Debug Mod 1");
             yield return ("com.smrkn.debug-mod-2", "Debug Mod 2");
         }
@@ -90,7 +90,7 @@ namespace IslandConfig.Controllers
 
             _config = new ConfigFile(cfgPath, false);
 
-            DebugModSettings["com.smrkn.island-config"] = new List<BepInConfigWrapper>()
+            DebugModSettings[IslandConfigPluginInfo.Guid] = new List<BepInConfigWrapper>()
             {
                 new TextConfigItem(_config.Bind("General", "Plugin Name", "Island Config")),
                 new CheckboxConfigItem(_config.Bind("General", "Enable", true)),
@@ -157,6 +157,8 @@ namespace IslandConfig.Controllers
 #endif
             _allMods = modList.OrderBy(tuple => tuple.modName, StringComparer.OrdinalIgnoreCase).ToList();
             PopulateModList(_allMods);
+            
+            OnModSelected(IslandConfigPluginInfo.Guid);
         }
 
         private void OnDisable()
