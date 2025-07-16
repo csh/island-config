@@ -23,7 +23,8 @@ namespace IslandConfig.Controllers
         [SerializeField] private ModListEntryController modListEntryControllerPrefab;
         [SerializeField] private RectTransform settingsList;
         [SerializeField] private TMP_InputField searchInput;
-        [SerializeField] private TextMeshProUGUI hoverText;
+        [SerializeField] private TextMeshProUGUI hoverTextName;
+        [SerializeField] private TextMeshProUGUI hoverTextDescription;
 
         private List<(string modGuid, string modName)> _allMods;
 
@@ -283,7 +284,7 @@ namespace IslandConfig.Controllers
             {
                 foreach (var wrapper in group)
                 {
-                    var configItem = wrapper.CreatePrefab(hoverText);
+                    var configItem = wrapper.CreatePrefab(hoverTextName, hoverTextDescription);
 
                     configItem.transform.SetParent(settingsList, false);
                 }

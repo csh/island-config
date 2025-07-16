@@ -13,7 +13,8 @@ namespace IslandConfig.Controllers.UI
         [Header("UI References")] 
         [SerializeField] private Toggle toggle;
         [SerializeField] private TextMeshProUGUI label;
-        [SerializeField] private TextMeshProUGUI hoverText;
+        [SerializeField] private TextMeshProUGUI hoverName;
+        [SerializeField] private TextMeshProUGUI hoverDesc;
         
 #if UNITY_EDITOR
         [Header("Debugging")]
@@ -39,10 +40,12 @@ namespace IslandConfig.Controllers.UI
 
         private CheckboxConfigItem _entry;
 
-        public void Initialize(CheckboxConfigItem entry, TextMeshProUGUI hoverTextTarget)
+        public void Initialize(CheckboxConfigItem entry, TextMeshProUGUI hoverNameTarget,
+            TextMeshProUGUI hoverDescTarget)
         {
             _entry = entry ?? throw new ArgumentNullException(nameof(entry));
-            hoverText = hoverTextTarget;
+            hoverName = hoverNameTarget;
+            hoverDesc = hoverDescTarget;
             label.text = entry.Name;
             toggle.isOn = entry.Value;
             entry.ConfigEntry.SettingChanged += OnSettingChanged;
@@ -80,8 +83,8 @@ namespace IslandConfig.Controllers.UI
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (hoverText is null) return;
-            hoverText.text = _entry.Description ?? "No description provided.";
+            if (hoverName is not null) hoverName.text = _entry.Name;
+            if (hoverDesc is not null) hoverDesc.text = _entry.Description;
         }
     }
 }

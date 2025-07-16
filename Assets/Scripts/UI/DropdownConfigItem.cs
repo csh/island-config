@@ -26,7 +26,7 @@ namespace IslandConfig.UI
             Options = new List<T>();
         }
 
-        internal override GameObject CreatePrefab(TextMeshProUGUI hoverText)
+        internal override GameObject CreatePrefab(TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
         {
 #if UNITY_EDITOR
             var prefab = Object.Instantiate(IslandConfigAssets.EditorDropdownPrefab).gameObject;
@@ -34,7 +34,7 @@ namespace IslandConfig.UI
             var prefab = Object.Instantiate(IslandConfigAssets.DropdownPrefab);
 #endif
             var controller = prefab.GetComponent<DropdownControllerScript>();
-            controller.Initialize(this, hoverText);
+            controller.Initialize(this, hoverNameTarget, hoverDescTarget);
             return prefab.gameObject;
         }
 

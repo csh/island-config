@@ -11,14 +11,17 @@ namespace IslandConfig.Controllers.UI
         [Header("UI References")] 
         [SerializeField] private TMP_Dropdown dropdown;
         [SerializeField] private TextMeshProUGUI label;
-        [SerializeField] private TextMeshProUGUI hoverText;
+        [SerializeField] private TextMeshProUGUI hoverName;
+        [SerializeField] private TextMeshProUGUI hoverDesc;
         
         private IDropdownDefinition _dropdownDefinition;
 
-        public void Initialize(IDropdownDefinition entry, TextMeshProUGUI hoverTextTarget)
+        public void Initialize(IDropdownDefinition entry, TextMeshProUGUI hoverNameTarget,
+            TextMeshProUGUI hoverDescTarget)
         {
             _dropdownDefinition = entry ?? throw new ArgumentNullException(nameof(entry));
-            hoverText = hoverTextTarget;
+            hoverName = hoverNameTarget;
+            hoverDesc = hoverDescTarget;
             label.text = entry.Name;
             dropdown.ClearOptions();
             dropdown.AddOptions(entry.Labels);
@@ -59,8 +62,8 @@ namespace IslandConfig.Controllers.UI
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (hoverText is null) return;
-            hoverText.text = _dropdownDefinition.Description ?? "No description provided.";
+            if (hoverName is not null) hoverName.text = _dropdownDefinition.Name;
+            if (hoverDesc is not null) hoverDesc.text = _dropdownDefinition.Description;
         }
     }
 }

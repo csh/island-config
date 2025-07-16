@@ -86,6 +86,7 @@ namespace IslandConfig.UI
                 {
                     acceptableValuesDescription = acceptableValuesDescription[1..].TrimStart();
                 }
+                builder.AppendLine();
                 builder.AppendLine(acceptableValuesDescription);
 
                 return builder.ToString();
@@ -95,7 +96,7 @@ namespace IslandConfig.UI
 
         internal bool IsDirty => Equals(CurrentBoxedValue, ConfigEntry.BoxedValue) == false;
         
-        internal abstract GameObject CreatePrefab(TextMeshProUGUI hoverText);
+        internal abstract GameObject CreatePrefab(TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget);
 
         internal void Commit()
         {
@@ -142,7 +143,7 @@ namespace IslandConfig.UI
             CurrentBoxedValue = ConfigEntry.BoxedValue;
         }
 
-        internal override GameObject CreatePrefab(TextMeshProUGUI hoverText)
+        internal override GameObject CreatePrefab(TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
         {
             throw new NotImplementedException("TODO: Prefab loading and instantiation");
         }

@@ -11,15 +11,18 @@ namespace IslandConfig.Controllers.UI
         [Header("UI References")] 
         [SerializeField] private TMP_InputField textInput;
         [SerializeField] private TextMeshProUGUI label;
-        [SerializeField] private TextMeshProUGUI hoverText;
+        [SerializeField] private TextMeshProUGUI hoverName;
+        [SerializeField] private TextMeshProUGUI hoverDesc;
 
         private ITextInputDefinition _definition;
         private Color _defaultTextColour;
         
-        public void Initialize(ITextInputDefinition definition, TextMeshProUGUI hoverTextTarget)
+        public void Initialize(ITextInputDefinition definition, TextMeshProUGUI hoverNameTarget,
+            TextMeshProUGUI hoverDescTarget)
         {
             _definition = definition ?? throw new ArgumentNullException(nameof(definition));
-            hoverText = hoverTextTarget;
+            hoverName = hoverNameTarget;
+            hoverDesc = hoverDescTarget;
             label.text = definition.Name;
             textInput.SetTextWithoutNotify(definition.Value);
             definition.SettingChanged += OnConfigEntryChanged;
@@ -69,8 +72,8 @@ namespace IslandConfig.Controllers.UI
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (hoverText is null) return;
-            hoverText.text = _definition.Description ?? "No description provided.";
+            if (hoverName is not null) hoverName.text = _definition.Name;
+            if (hoverDesc is not null) hoverDesc.text = _definition.Description;
         }
     }
 }
