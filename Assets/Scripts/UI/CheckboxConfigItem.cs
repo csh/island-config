@@ -13,7 +13,7 @@ namespace IslandConfig.UI
         internal override GameObject CreatePrefab()
         {
 #if UNITY_EDITOR
-            var prefab = Object.Instantiate(IslandConfigAssets.EditorCheckboxPrefab.gameObject);
+            var prefab = Object.Instantiate(IslandConfigAssets.EditorCheckboxPrefab).gameObject;
 #else
             var prefab = Object.Instantiate(IslandConfigAssets.CheckboxPrefab);
 #endif

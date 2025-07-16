@@ -147,6 +147,7 @@ namespace IslandConfig.Controllers
             IEnumerable<(string modGuid, string modName)> modList;
 #if UNITY_EDITOR
             modList = GetDummyMods();
+            EditorPopulatePrefabs();
             EditorPopulateSettingsPanel();
 #else
             IslandConfig.GenerateConfigs();

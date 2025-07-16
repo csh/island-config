@@ -66,7 +66,6 @@ namespace IslandConfig.Controllers.UI
 
         private void OnSliderValueChanged(float value)
         {
-            Debug.Log($"Slider value: {value}");
             if (_sliderDefinition is null || Mathf.Approximately(_sliderDefinition.FloatValue, value)) return;
             _sliderDefinition.FloatValue = value;
         }

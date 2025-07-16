@@ -20,6 +20,13 @@ namespace IslandConfig
     {
         internal new static ManualLogSource Logger;
         
+#if UNITY_EDITOR
+        static IslandConfigPlugin()
+        {
+            Logger = BepInEx.Logging.Logger.CreateLogSource("IslandConfigEditor");
+        }
+#endif
+        
         internal static IslandConfigPlugin Instance { get; private set; }
         
         private Harmony _harmony;
