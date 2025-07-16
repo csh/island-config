@@ -12,6 +12,7 @@ namespace IslandConfig.Controllers.UI
         [SerializeField] private TextMeshProUGUI label;
 
         private ITextInputDefinition _definition;
+        private Color _defaultTextColour;
         
         public void Initialize(ITextInputDefinition definition)
         {
@@ -19,6 +20,11 @@ namespace IslandConfig.Controllers.UI
             label.text = definition.Name;
             textInput.SetTextWithoutNotify(definition.Value);
             definition.SettingChanged += OnConfigEntryChanged;
+        }
+
+        private void Awake()
+        {
+            _defaultTextColour = textInput.textComponent.color;
         }
 
         private void OnEnable()
@@ -42,9 +48,10 @@ namespace IslandConfig.Controllers.UI
             {
                 if (!numeric.ValidateInput(value))
                 {
-                    // TODO: Display some kind of "invalid" indicator
+                    textInput.textComponent.color = Color.red;
                     return;
                 }
+                textInput.textComponent.color = _defaultTextColour;
             }
             _definition.Value = value;
         }
