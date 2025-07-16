@@ -5,21 +5,21 @@ using UnityEngine;
 
 namespace IslandConfig.Controllers.UI
 {
-    internal class EnumDropdownControllerScript : MonoBehaviour
+    internal class DropdownControllerScript : MonoBehaviour
     {
         [Header("UI References")] 
         [SerializeField] private TMP_Dropdown dropdown;
         [SerializeField] private TextMeshProUGUI label;
         
-        private IEnumDropdownDefinition _dropdownDefinition;
+        private IDropdownDefinition _dropdownDefinition;
 
-        public void Initialize(IEnumDropdownDefinition entry)
+        public void Initialize(IDropdownDefinition entry)
         {
             _dropdownDefinition = entry ?? throw new ArgumentNullException(nameof(entry));
             
             label.text = entry.Name;
             dropdown.ClearOptions();
-            dropdown.AddOptions(entry.Options);
+            dropdown.AddOptions(entry.Labels);
             dropdown.SetValueWithoutNotify(entry.SelectedIndex);
             
             entry.SettingChanged += OnSettingChanged;

@@ -149,4 +149,12 @@ namespace IslandConfig.UI
             Dispose();
         }
     }
+
+    public interface IGenericConfigurable
+    {
+        string Name { get; }
+        string Section { get; }
+        string Description { get; }
+        event EventHandler SettingChanged;
+    }
 }

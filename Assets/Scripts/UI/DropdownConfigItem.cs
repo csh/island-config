@@ -2,72 +2,84 @@
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
+using IslandConfig.Controllers.UI;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace IslandConfig.UI
 {
-    public interface IEnumDropdownDefinition
+    public interface IDropdownDefinition : IGenericConfigurable
     {
-        string Name { get; }
-        string Section { get; }
-        string Description { get; }
         int SelectedIndex { get; set; }
-        List<string> Options { get; }
-        event EventHandler SettingChanged;
+        List<string> Labels { get; }
     }
-    
-    public class EnumDropdownConfigItem<T> : BepInConfigWrapper<T>, IEnumDropdownDefinition where T: Enum
-    { 
-        private readonly List<string> _options;
-        
-        public EnumDropdownConfigItem(ConfigEntry<T> configEntry) : base(configEntry)
+
+    public class DropdownBaseItem<T> : BepInConfigWrapper<T>, IDropdownDefinition
+    {
+        protected readonly List<string> Labels;
+        protected readonly List<T> Options;
+
+        protected DropdownBaseItem(ConfigEntry<T> configEntry) : base(configEntry)
         {
-            _options = Enum.GetNames(typeof(T)).ToList();
+            Labels = new List<string>();
+            Options = new List<T>();
         }
 
-        string IEnumDropdownDefinition.Name => Name;
-        string IEnumDropdownDefinition.Section => Section;
-        string IEnumDropdownDefinition.Description => Description;
-        List<string> IEnumDropdownDefinition.Options => _options;
-        
-        int IEnumDropdownDefinition.SelectedIndex 
+        internal override GameObject CreatePrefab()
         {
-            get
-            {
-                var currentName = Value!.ToString();
-                return _options.IndexOf(currentName);
-            }
-            set
-            {
-                if (value < 0 || value >= _options.Count)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                Value = (T)Enum.Parse(typeof(T), _options[value]);
-            }
+#if UNITY_EDITOR
+            var prefab = Object.Instantiate(IslandConfigAssets.EditorDropdownPrefab).gameObject;
+#else
+            var prefab = Object.Instantiate(IslandConfigAssets.DropdownPrefab);
+#endif
+            var controller = prefab.GetComponent<DropdownControllerScript>();
+            controller.Initialize(this);
+            return prefab.gameObject;
         }
-        
-        event EventHandler IEnumDropdownDefinition.SettingChanged
+
+        string IGenericConfigurable.Name => Name;
+        string IGenericConfigurable.Section => Section;
+        string IGenericConfigurable.Description => Description;
+        event EventHandler IGenericConfigurable.SettingChanged
         {
             add => ConfigEntry.SettingChanged += value;
             remove => ConfigEntry.SettingChanged -= value;
         }
+
+        int IDropdownDefinition.SelectedIndex
+        {
+            get => Options.IndexOf(Value);
+            set {
+                if (value < 0 || value >= Options.Count) return;
+                Value = Options[value];
+            }
+        }
+
+        List<string> IDropdownDefinition.Labels => Labels;
     }
 
-    public class DropdownConfigItem<T> : BepInConfigWrapper<T> where T : IEquatable<T>
+    public class EnumDropdownConfigItem<T> : DropdownBaseItem<T> where T: Enum
     {
-        protected readonly IList<T> Options;
-
-        protected DropdownConfigItem(ConfigEntry<T> configEntry) : base(configEntry)
+        public EnumDropdownConfigItem(ConfigEntry<T> configEntry) : base(configEntry)
         {
-            if (configEntry.Description.AcceptableValues is null) return;
-            var constraints = ConfigEntry.Description.AcceptableValues;
+            Options.AddRange(Enum.GetValues(typeof(T)).Cast<T>());
+            Labels.AddRange(Options.Select(e => Enum.GetName(typeof(T), e)));
+        }
+    }
 
-            if (constraints is not AcceptableValueList<T> validOptions)
+    public class DropdownConfigItem<T> : DropdownBaseItem<T> where T : IEquatable<T>
+    {
+        public DropdownConfigItem(ConfigEntry<T> configEntry) : base(configEntry)
+        {
+            if (configEntry.Description.AcceptableValues is AcceptableValueList<T> list)
             {
-                throw new ArgumentException(
-                    $"{nameof(ConfigEntry<T>)} has incorrect constraint type; expected {nameof(AcceptableValueList<T>)}",
-                    nameof(configEntry));
+                Options.AddRange(list.AcceptableValues);
+                Labels.AddRange(list.AcceptableValues.Select(v => v.ToString()));
             }
-
-            Options = new List<T>(validOptions.AcceptableValues);
+            else
+            {
+                throw new ArgumentException($"Dropdown for \"{Section}/{Name}\" entry requires {nameof(AcceptableValueList<T>)}", nameof(configEntry));
+            }
         }
     }
 }

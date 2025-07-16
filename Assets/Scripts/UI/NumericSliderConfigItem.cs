@@ -6,16 +6,12 @@ using Object = UnityEngine.Object;
 
 namespace IslandConfig.UI
 {
-    internal interface INumericSliderDefinition
+    internal interface INumericSliderDefinition : IGenericConfigurable
     {
         bool IsWholeNumberType { get; }
         float Min { get; }
         float Max { get; }
         float FloatValue { get; set; }
-        string Name { get; }
-        string Section { get; }
-        string Description { get; }
-        event EventHandler SettingChanged;
     }
     
     public abstract class NumericSliderConfigItem<T> : BepInConfigWrapper<T>, INumericSliderDefinition where T : IComparable, IConvertible
@@ -73,11 +69,11 @@ namespace IslandConfig.UI
             set => UpdateFromFloat(value);
         }
 
-        string INumericSliderDefinition.Name => base.Name;
-        string INumericSliderDefinition.Section => base.Section;
-        string INumericSliderDefinition.Description => base.Description;
+        string IGenericConfigurable.Name => base.Name;
+        string IGenericConfigurable.Section => base.Section;
+        string IGenericConfigurable.Description => base.Description;
 
-        event EventHandler INumericSliderDefinition.SettingChanged
+        event EventHandler IGenericConfigurable.SettingChanged
         {
             add => ConfigEntry.SettingChanged += value;
             remove => ConfigEntry.SettingChanged -= value;

@@ -27,6 +27,12 @@ namespace IslandConfig.Controllers
         private List<(string modGuid, string modName)> _allMods;
 
 #if UNITY_EDITOR
+        private enum TestEnum
+        {
+            Lorem,
+            Ipsum
+        }
+
         private static IEnumerable<(string modGuid, string modName)> GetDummyMods()
         {
             yield return (IslandConfigPluginInfo.Guid, IslandConfigPluginInfo.Name);
@@ -36,16 +42,17 @@ namespace IslandConfig.Controllers
 
         private static readonly Dictionary<string, List<BepInConfigWrapper>> DebugModSettings = new();
         private static ConfigFile _config;
-        
+
         [ContextMenu("Debug: Populate Prefabs")]
         private void EditorPopulatePrefabs()
         {
+            IslandConfigAssets.EditorDropdownPrefab = dropdownControllerPrefab;
             IslandConfigAssets.EditorCheckboxPrefab = checkboxControllerPrefab;
             IslandConfigAssets.EditorSliderPrefab = sliderControllerPrefab;
             IslandConfigAssets.EditorTextPrefab = textControllerPrefab;
             Debug.Log("Prefab list populated");
         }
-        
+
         [ContextMenu("Debug: Populate Mod List")]
         private void EditorPopulateModList()
         {
@@ -56,6 +63,7 @@ namespace IslandConfig.Controllers
             PopulateModList(_allMods);
         }
 
+        [SerializeField] private DropdownControllerScript dropdownControllerPrefab;
         [SerializeField] private CheckboxControllerScript checkboxControllerPrefab;
         [SerializeField] private SliderControllerScript sliderControllerPrefab;
         [SerializeField] private TextControllerScript textControllerPrefab;
@@ -95,7 +103,17 @@ namespace IslandConfig.Controllers
                 new TextConfigItem(_config.Bind("General", "Plugin Name", "Island Config")),
                 new CheckboxConfigItem(_config.Bind("General", "Enable", true)),
                 new IntSliderConfigItem(Bind(0, 0, 10)),
-                new ByteSliderConfigItem(Bind<byte>(0, 1, 3))
+                new ByteSliderConfigItem(Bind<byte>(0, 1, 3)),
+                
+                new EnumDropdownConfigItem<TestEnum>(_config.Bind("Dropdowns", "Enum", TestEnum.Lorem)),
+                
+                new DropdownConfigItem<string>(_config.Bind("Dropdowns", "Generic String", "Foo",
+                    new ConfigDescription("A generic dropdown with acceptable values",
+                        new AcceptableValueList<string>("Foo", "Bar")))),
+                
+                new DropdownConfigItem<int>(_config.Bind("Dropdowns", "Generic Number", 15,
+                    new ConfigDescription("A generic dropdown with acceptable values",
+                        new AcceptableValueList<int>(10, 15, 25))))
             };
 
             DebugModSettings["com.smrkn.debug-mod-1"] = new List<BepInConfigWrapper>()
@@ -119,7 +137,7 @@ namespace IslandConfig.Controllers
                     Bind(0m, -100m, 100m)
                 )
             };
-            
+
             DebugModSettings["com.smrkn.debug-mod-2"] = new List<BepInConfigWrapper>()
             {
                 new TextConfigItem(_config.Bind("General", "Something Practical", "Dummy Config")),
@@ -127,7 +145,7 @@ namespace IslandConfig.Controllers
                     Bind<byte>(5, 0, 10)
                 ),
             };
-            
+
             return;
 
             ConfigEntry<T> Bind<T>(T defaultValue, T minValue, T maxValue) where T : IComparable
@@ -158,7 +176,7 @@ namespace IslandConfig.Controllers
 #endif
             _allMods = modList.OrderBy(tuple => tuple.modName, StringComparer.OrdinalIgnoreCase).ToList();
             PopulateModList(_allMods);
-            
+
             OnModSelected(IslandConfigPluginInfo.Guid);
         }
 
@@ -257,7 +275,7 @@ namespace IslandConfig.Controllers
                 foreach (var wrapper in group.OrderBy(w => w.Name))
                 {
                     var configItem = wrapper.CreatePrefab();
-                    
+
                     configItem.transform.SetParent(settingsList, false);
                 }
             }

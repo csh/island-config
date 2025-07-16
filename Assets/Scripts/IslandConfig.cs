@@ -108,6 +108,15 @@ namespace IslandConfig
         }
 
         public ConfigBuilder WithDropdown<T>(ConfigEntry<T> configEntry, string section = null, string label = null,
+            string description = null) where T : IEquatable<T>
+        {
+            var wrapper = new DropdownConfigItem<T>(configEntry);
+            SetCustomAttributes(wrapper, section, label, description);
+            Configs[configEntry] = wrapper;
+            return this;
+        }
+        
+        public ConfigBuilder WithEnumDropdown<T>(ConfigEntry<T> configEntry, string section = null, string label = null,
             string description = null) where T : Enum
         {
             var wrapper = new EnumDropdownConfigItem<T>(configEntry);

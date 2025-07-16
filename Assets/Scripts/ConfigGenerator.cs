@@ -38,9 +38,16 @@ namespace IslandConfig
                 
                 #endregion
                 
+                not null when type.IsEnum == false && HasListConstraint(configEntry) => CreateGenericDropdown(configEntry),
                 not null when type.IsEnum => CreateEnumConfigItem(configEntry),
                 _ => throw new NotImplementedException($"{type!.Name} not supported yet")
             };
+        }
+
+        private static bool HasListConstraint(ConfigEntryBase configEntry)
+        {
+            return configEntry.Description?.AcceptableValues != null &&
+                   configEntry.Description.AcceptableValues.GetType().IsAssignableFrom(typeof(AcceptableValueList<>));
         }
 
         private static bool HasRangeConstraint(ConfigEntryBase configEntry)
@@ -49,6 +56,12 @@ namespace IslandConfig
                    configEntry.Description.AcceptableValues.GetType().IsAssignableFrom(typeof(AcceptableValueRange<>));
         }
 
+        private static BepInConfigWrapper CreateGenericDropdown(ConfigEntryBase configEntry)
+        {
+            var generified = typeof(DropdownConfigItem<>).MakeGenericType(configEntry.SettingType);
+            return (BepInConfigWrapper)Activator.CreateInstance(generified);
+        }
+        
         private static BepInConfigWrapper CreateEnumConfigItem(ConfigEntryBase configEntry)
         {
             var generified = typeof(EnumDropdownConfigItem<>).MakeGenericType(configEntry.SettingType);
