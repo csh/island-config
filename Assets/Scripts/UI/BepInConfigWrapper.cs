@@ -73,13 +73,6 @@ namespace IslandConfig.UI
         internal bool IsDirty => Equals(CurrentBoxedValue, ConfigEntry.BoxedValue) == false;
         
         internal abstract GameObject CreatePrefab();
-        
-        internal bool ValidateInput(object o)
-        {
-            if (ConfigEntry.Description.AcceptableValues is null) return true;
-            var constraints = ConfigEntry.Description.AcceptableValues;
-            return constraints.IsValid(o);
-        }
 
         internal void Commit()
         {

@@ -102,8 +102,8 @@ namespace IslandConfig.Controllers
             {
                 new TextConfigItem(_config.Bind("General", "Plugin Name", "Island Config")),
                 new CheckboxConfigItem(_config.Bind("General", "Enable", true)),
-                new IntSliderConfigItem(Bind(0, 0, 10)),
-                new ByteSliderConfigItem(Bind<byte>(0, 1, 3)),
+                new IntSliderConfigItem(BindNumericSlider(0, 0, 10)),
+                new ByteSliderConfigItem(BindNumericSlider<byte>(0, 1, 3)),
                 
                 new EnumDropdownConfigItem<TestEnum>(_config.Bind("Dropdowns", "Enum", TestEnum.Lorem)),
                 
@@ -119,40 +119,48 @@ namespace IslandConfig.Controllers
             DebugModSettings["com.smrkn.debug-mod-1"] = new List<BepInConfigWrapper>()
             {
                 new ByteSliderConfigItem(
-                    Bind<byte>(5, 0, 10)
+                    BindNumericSlider<byte>(5, 0, 10)
                 ),
                 new ShortSliderConfigItem(
-                    Bind<short>(5, 0, 100)
+                    BindNumericSlider<short>(5, 0, 100)
                 ),
                 new IntSliderConfigItem(
-                    Bind(0, -1000, 1000)
+                    BindNumericSlider(0, -1000, 1000)
                 ),
                 new FloatSliderConfigItem(
-                    Bind(0f, -1f, 1f)
+                    BindNumericSlider(0f, -1f, 1f)
                 ),
                 new DoubleSliderConfigItem(
-                    Bind(0.0, -10.0, 10.0)
+                    BindNumericSlider(0.0, -10.0, 10.0)
                 ),
                 new DecimalSliderConfigItem(
-                    Bind(0m, -100m, 100m)
-                )
+                    BindNumericSlider(0m, -100m, 100m)
+                ),
             };
 
             DebugModSettings["com.smrkn.debug-mod-2"] = new List<BepInConfigWrapper>()
             {
                 new TextConfigItem(_config.Bind("General", "Something Practical", "Dummy Config")),
-                new ByteSliderConfigItem(
-                    Bind<byte>(5, 0, 10)
-                ),
+                new IntTextInput(BindNumericTextInput(5)),
+                new ByteTextInput(BindNumericTextInput<byte>(10)),
+                new ShortTextInput(BindNumericTextInput<short>(15)),
+                new FloatTextInput(BindNumericTextInput(20f)),
+                new DoubleTextInput(BindNumericTextInput(25d)),
+                new DecimalTextInput(BindNumericTextInput<decimal>(30)),
             };
 
             return;
 
-            ConfigEntry<T> Bind<T>(T defaultValue, T minValue, T maxValue) where T : IComparable
+            ConfigEntry<T> BindNumericSlider<T>(T defaultValue, T minValue, T maxValue) where T : IComparable
             {
                 return _config.Bind("Debug", $"Debug {typeof(T).Name}", defaultValue,
                     new ConfigDescription($"{typeof(T).Name} test slider",
                         new AcceptableValueRange<T>(minValue, maxValue)));
+            }
+
+            ConfigEntry<T> BindNumericTextInput<T>(T defaultValue) where T : IConvertible
+            {
+                return _config.Bind("Numeric Input", $"{typeof(T).Name} Text Input", defaultValue);
             }
         }
 #endif

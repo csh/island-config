@@ -38,6 +38,17 @@ namespace IslandConfig
                 
                 #endregion
                 
+                #region Numeric text inputs
+                
+                not null when type.IsEquivalentTo(typeof(int)) && !HasListConstraint(configEntry) => new IntTextInput(configEntry as ConfigEntry<int>),
+                not null when type.IsEquivalentTo(typeof(byte)) && !HasListConstraint(configEntry) => new ByteTextInput(configEntry as ConfigEntry<byte>),
+                not null when type.IsEquivalentTo(typeof(short)) && !HasListConstraint(configEntry) => new ShortTextInput(configEntry as ConfigEntry<short>),
+                not null when type.IsEquivalentTo(typeof(float)) && !HasListConstraint(configEntry) => new FloatTextInput(configEntry as ConfigEntry<float>),
+                not null when type.IsEquivalentTo(typeof(double)) && !HasListConstraint(configEntry) => new DoubleTextInput(configEntry as ConfigEntry<double>),
+                not null when type.IsEquivalentTo(typeof(decimal)) && !HasListConstraint(configEntry) => new DecimalTextInput(configEntry as ConfigEntry<decimal>),
+                
+                #endregion
+                
                 not null when type.IsEnum == false && HasListConstraint(configEntry) => CreateGenericDropdown(configEntry),
                 not null when type.IsEnum => CreateEnumConfigItem(configEntry),
                 _ => throw new NotImplementedException($"{type!.Name} not supported yet")

@@ -1,10 +1,12 @@
-﻿using BepInEx.Configuration;
+﻿using System;
+using BepInEx.Configuration;
 using IslandConfig.Controllers.UI;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace IslandConfig.UI
 {
-    public class TextConfigItem : BepInConfigWrapper<string>
+    public class TextConfigItem : BepInConfigWrapper<string>, ITextInputDefinition
     {
         public TextConfigItem(ConfigEntry<string> configEntry) : base(configEntry)
         {
@@ -20,6 +22,21 @@ namespace IslandConfig.UI
             var controller = prefab.GetComponent<TextControllerScript>();
             controller.Initialize(this);
             return prefab.gameObject;
+        }
+
+        string IGenericConfigurable.Name => Name;
+        string IGenericConfigurable.Section => Section;
+        string IGenericConfigurable.Description => Description;
+        event EventHandler IGenericConfigurable.SettingChanged
+        {
+            add => ConfigEntry.SettingChanged += value;
+            remove => ConfigEntry.SettingChanged -= value;
+        }
+
+        string ITextInputDefinition.Value
+        {
+            get => Value;
+            set => Value = value;
         }
     }
 }

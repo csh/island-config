@@ -5,20 +5,20 @@ using UnityEngine;
 
 namespace IslandConfig.Controllers.UI
 {
-    public class TextControllerScript : MonoBehaviour
+    internal class TextControllerScript : MonoBehaviour
     {
         [Header("UI References")] 
         [SerializeField] private TMP_InputField textInput;
         [SerializeField] private TextMeshProUGUI label;
-        
-        private TextConfigItem _entry;
 
-        public void Initialize(TextConfigItem entry)
+        private ITextInputDefinition _definition;
+        
+        public void Initialize(ITextInputDefinition definition)
         {
-            _entry = entry ?? throw new ArgumentNullException(nameof(entry));
-            label.text = entry.Name;
-            textInput.SetTextWithoutNotify(entry.Value);
-            _entry.ConfigEntry.SettingChanged += OnConfigEntryChanged;
+            _definition = definition ?? throw new ArgumentNullException(nameof(definition));
+            label.text = definition.Name;
+            textInput.SetTextWithoutNotify(definition.Value);
+            definition.SettingChanged += OnConfigEntryChanged;
         }
 
         private void OnEnable()
@@ -33,19 +33,27 @@ namespace IslandConfig.Controllers.UI
 
         private void OnConfigEntryChanged(object sender, EventArgs e)
         {
-            textInput?.SetTextWithoutNotify(_entry.Value);
+            textInput?.SetTextWithoutNotify(_definition.Value);
         }
 
         private void OnTextInputChanged(string value)
         {
-            _entry.Value = value;
+            if (_definition is INumericTextDefinition numeric)
+            {
+                if (!numeric.ValidateInput(value))
+                {
+                    // TODO: Display some kind of "invalid" indicator
+                    return;
+                }
+            }
+            _definition.Value = value;
         }
 
         private void OnDestroy()
         {
-            if (_entry is not null)
+            if (_definition is not null)
             {
-                _entry.ConfigEntry.SettingChanged -= OnConfigEntryChanged;
+                _definition.SettingChanged -= OnConfigEntryChanged;
             }
         }
     }
