@@ -1,5 +1,5 @@
 using System;
-using BepInEx.Configuration;
+using IslandConfig.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,54 +26,38 @@ namespace IslandConfig.Controllers.UI
         }
 #endif
 
-        private ConfigEntry<float> _entry;
+        private INumericSliderDefinition _sliderDefinition;
 
-        public void Initialize(ConfigEntry<float> entry)
+        public void Initialize(INumericSliderDefinition entry)
         {
-            _entry = entry ?? throw new ArgumentNullException(nameof(entry));
+            _sliderDefinition = entry ?? throw new ArgumentNullException(nameof(entry));
 
-            label.text = entry.Definition.Key;
-            slider.value = entry.Value;
+            label.text = entry.Name;
+            slider.minValue = entry.Min;
+            slider.maxValue = entry.Max;
+            slider.value = entry.FloatValue;
+            slider.wholeNumbers = entry.IsWholeNumberType;
             slider.onValueChanged.AddListener(OnSliderValueChanged);
-            entry.SettingChanged += OnSettingChanged;
-
-            var acceptableRange = (AcceptableValueRange<float>)entry.Description.AcceptableValues;
-            if (acceptableRange is null)
-            {
-                slider.minValue = 0.0f;
-                slider.maxValue = 1.0f;
-            }
-            else
-            {
-                slider.minValue = acceptableRange.MinValue;
-                slider.maxValue = acceptableRange.MaxValue;
-            }
+            entry.AddChangeHandler(OnSettingChanged);
         }
 
         private void OnSettingChanged(object sender, EventArgs e)
         {
-            if (_entry is null || Mathf.Approximately(slider.value, _entry.Value)) return;
-            slider.value = _entry.Value;
+            if (_sliderDefinition is null || Mathf.Approximately(slider.value, _sliderDefinition.FloatValue)) return;
+            slider.value = _sliderDefinition.FloatValue;
         }
 
         private void OnSliderValueChanged(float value)
         {
             Debug.Log($"Slider value: {value}");
-            if (_entry is null || Mathf.Approximately(_entry.Value, value)) return;
-            _entry.Value = value;
+            if (_sliderDefinition is null || Mathf.Approximately(_sliderDefinition.FloatValue, value)) return;
+            _sliderDefinition.FloatValue = value;
         }
         
         private void OnDestroy()
         {
-            if (slider is not null)
-            {
-                slider.onValueChanged.RemoveListener(OnSliderValueChanged);
-            }
-            
-            if (_entry is not null)
-            {
-                _entry.SettingChanged -= OnSettingChanged;
-            }
+            slider?.onValueChanged.RemoveListener(OnSliderValueChanged);
+            _sliderDefinition?.RemoveChangeHandler(OnSettingChanged);
         }
     }
 }

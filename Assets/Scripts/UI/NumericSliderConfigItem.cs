@@ -1,12 +1,25 @@
 ﻿using System;
 using BepInEx.Configuration;
+using UnityEngine;
 
 namespace IslandConfig.UI
 {
-    public abstract class NumericSliderConfigItem<T> : BepInConfigWrapper<T> where T : IComparable
+    internal interface INumericSliderDefinition
     {
-        internal readonly bool IsWholeNumberType;
+        bool IsWholeNumberType { get; }
+        float Min { get; }
+        float Max { get; }
+        float FloatValue { get; set; }
+        string Name { get; }
+        string Section { get; }
+        string Description { get; }
 
+        void AddChangeHandler(EventHandler handler);
+        void RemoveChangeHandler(EventHandler handler);
+    }
+    
+    public abstract class NumericSliderConfigItem<T> : BepInConfigWrapper<T>, INumericSliderDefinition where T : IComparable, IConvertible
+    {
         public T MinValue { get; protected set; }
         public T MaxValue { get; protected set; }
 
@@ -20,6 +33,7 @@ namespace IslandConfig.UI
                     MinValue = range.MinValue;
                     MaxValue = range.MaxValue;
                     break;
+                // TODO: Default to generic numeric input in the event of absence of an acceptable value range?
                 case null:
                     MinValue = defaultMinValue;
                     MaxValue = defaultMaxValue;
@@ -29,6 +43,48 @@ namespace IslandConfig.UI
                         $"{configEntry.Definition.Key} has incorrect constraint type, expected {nameof(AcceptableValueRange<T>)}",
                         nameof(configEntry));
             }
+        }
+
+        internal bool UpdateFromFloat(float value)
+        {
+            var min = Convert.ToSingle(MinValue);
+            var max = Convert.ToSingle(MaxValue);
+            var clamped = Mathf.Clamp(value, min, max);
+            
+            if (IsWholeNumberType)
+                clamped = Mathf.Round(clamped);
+            
+            var raw = Convert.ChangeType(clamped, typeof(T));
+            if (Equals(raw, Value))
+            {
+                return false;
+            }
+            
+            CurrentBoxedValue = raw;
+            return true;
+        }
+
+        public bool IsWholeNumberType { get; }
+        public float Min => Convert.ToSingle(MinValue);
+        public float Max => Convert.ToSingle(MaxValue);
+        public float FloatValue
+        {
+            get => Convert.ToSingle(CurrentBoxedValue);
+            set => UpdateFromFloat(value);
+        }
+
+        string INumericSliderDefinition.Name => base.Name;
+        string INumericSliderDefinition.Section => base.Section;
+        string INumericSliderDefinition.Description => base.Description;
+
+        void INumericSliderDefinition.AddChangeHandler(EventHandler handler)
+        {
+            ConfigEntry.SettingChanged += handler;
+        }
+
+        void INumericSliderDefinition.RemoveChangeHandler(EventHandler handler)
+        {
+            ConfigEntry.SettingChanged -= handler;
         }
     }
 
