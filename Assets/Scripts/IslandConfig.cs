@@ -161,7 +161,7 @@ namespace IslandConfig
 
         #endregion
 
-        private void SetCustomAttributes(BepInConfigWrapper wrapper, string section, string label, string description)
+        private static void SetCustomAttributes(BepInConfigWrapper wrapper, string section, string label, string description)
         {
             if (string.IsNullOrEmpty(label) == false)
             {

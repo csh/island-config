@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using IslandConfig.Controllers.UI;
@@ -67,23 +66,22 @@ namespace IslandConfig.Controllers
             {
                 throw new NullReferenceException("Failed to get Paths.BepInExConfigPath property info");
             }
-            
+
             var projectRoot = Path.GetDirectoryName(Application.dataPath);
             var tempDir = Path.Combine(projectRoot!, "Temp");
             var rootCfgPath = Path.Combine(tempDir, "bepinex.cfg");
             var cfgPath = Path.Combine(tempDir, "debug.cfg");
             Debug.Log($"Using debug config at: {cfgPath}");
 
-
             propertyInfo.SetValue(null, rootCfgPath);
-            
+
             var config = new ConfigFile(cfgPath, false);
             var sliders = new List<INumericSliderDefinition>
             {
                 new ByteSliderConfigItem(
                     Bind<byte>(5, 0, 10)
                 ),
-                
+
                 new ShortSliderConfigItem(
                     Bind<short>(5, 0, 100)
                 ),
@@ -111,7 +109,9 @@ namespace IslandConfig.Controllers
 
             ConfigEntry<T> Bind<T>(T defaultValue, T minValue, T maxValue) where T : IComparable
             {
-                return config.Bind("Debug", typeof(T).Name, defaultValue, new ConfigDescription($"{typeof(T).Name} test slider", new AcceptableValueRange<T>(minValue, maxValue)));    
+                return config.Bind("Debug", $"Debug {typeof(T).Name}", defaultValue,
+                    new ConfigDescription($"{typeof(T).Name} test slider",
+                        new AcceptableValueRange<T>(minValue, maxValue)));
             }
         }
 #endif
