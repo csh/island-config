@@ -7,10 +7,9 @@ namespace IslandConfig.UI
 {
     public abstract class BepInConfigWrapper
     {
-        protected readonly ConfigEntryBase ConfigEntry;
-
         protected object CurrentBoxedValue;
-
+        private readonly WeakReference<ConfigEntryBase> _configEntry;
+        
         private string _customName;
         private string _customSection;
         private string _customDescription;
@@ -18,8 +17,20 @@ namespace IslandConfig.UI
 
         internal BepInConfigWrapper(ConfigEntryBase configEntry)
         {
-            ConfigEntry = configEntry;
+            _configEntry = new WeakReference<ConfigEntryBase>(configEntry);
             CurrentBoxedValue = configEntry.BoxedValue;
+        }
+        
+        protected ConfigEntryBase ConfigEntry
+        {
+            get
+            {
+                if (_configEntry.TryGetTarget(out var configEntry))
+                {
+                    return configEntry;
+                }
+                throw new InvalidOperationException("Underlying ConfigEntry has been garbage collected");
+            }
         }
 
         internal PluginInfo Owner
@@ -97,7 +108,7 @@ namespace IslandConfig.UI
                 configEntry.SettingChanged += OnSettingChanged;
             }
         }
-
+        
         internal new ConfigEntry<T> ConfigEntry => (ConfigEntry<T>)base.ConfigEntry;
 
         internal T Value
