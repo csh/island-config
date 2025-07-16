@@ -25,7 +25,7 @@ namespace IslandConfig
             return type switch
             {
                 not null when type.IsEquivalentTo(typeof(bool)) => new CheckboxConfigItem(configEntry as ConfigEntry<bool>),
-                not null when type.IsEquivalentTo(typeof(string)) => new TextConfigItem(configEntry as ConfigEntry<string>),
+                not null when type.IsEquivalentTo(typeof(string)) && !HasListConstraint(configEntry) => new TextConfigItem(configEntry as ConfigEntry<string>),
                 
                 #region Numeric sliders
 
