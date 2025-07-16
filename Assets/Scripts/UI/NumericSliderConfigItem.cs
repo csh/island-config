@@ -13,9 +13,7 @@ namespace IslandConfig.UI
         string Name { get; }
         string Section { get; }
         string Description { get; }
-
-        void AddChangeHandler(EventHandler handler);
-        void RemoveChangeHandler(EventHandler handler);
+        event EventHandler SettingChanged;
     }
     
     public abstract class NumericSliderConfigItem<T> : BepInConfigWrapper<T>, INumericSliderDefinition where T : IComparable, IConvertible
@@ -45,7 +43,7 @@ namespace IslandConfig.UI
             }
         }
 
-        internal bool UpdateFromFloat(float value)
+        private bool UpdateFromFloat(float value)
         {
             var min = Convert.ToSingle(MinValue);
             var max = Convert.ToSingle(MaxValue);
@@ -77,14 +75,10 @@ namespace IslandConfig.UI
         string INumericSliderDefinition.Section => base.Section;
         string INumericSliderDefinition.Description => base.Description;
 
-        void INumericSliderDefinition.AddChangeHandler(EventHandler handler)
+        event EventHandler INumericSliderDefinition.SettingChanged
         {
-            ConfigEntry.SettingChanged += handler;
-        }
-
-        void INumericSliderDefinition.RemoveChangeHandler(EventHandler handler)
-        {
-            ConfigEntry.SettingChanged -= handler;
+            add => ConfigEntry.SettingChanged += value;
+            remove => ConfigEntry.SettingChanged -= value;
         }
     }
 

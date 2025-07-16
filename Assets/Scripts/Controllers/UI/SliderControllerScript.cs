@@ -37,7 +37,7 @@ namespace IslandConfig.Controllers.UI
             slider.maxValue = entry.Max;
             slider.wholeNumbers = entry.IsWholeNumberType;
             slider.SetValueWithoutNotify(entry.FloatValue);
-            entry.AddChangeHandler(OnSettingChanged);
+            entry.SettingChanged += OnSettingChanged;
         }
 
         private void OnEnable()
@@ -52,7 +52,10 @@ namespace IslandConfig.Controllers.UI
         
         private void OnDestroy()
         {
-            _sliderDefinition?.RemoveChangeHandler(OnSettingChanged);
+            if (_sliderDefinition is not null)
+            {
+                _sliderDefinition.SettingChanged -= OnSettingChanged;
+            }
         }
 
         private void OnSettingChanged(object sender, EventArgs e)

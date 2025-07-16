@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BepInEx.Configuration;
+using IslandConfig.UI;
 using TMPro;
 using UnityEngine;
 
@@ -13,67 +11,18 @@ namespace IslandConfig.Controllers.UI
         [SerializeField] private TMP_Dropdown dropdown;
         [SerializeField] private TextMeshProUGUI label;
         
-#if UNITY_EDITOR
-        [Header("Debugging")]
-        [InspectorName("Label Text")]
-        [SerializeField] private string labelText = "Settings Label";
-        
-        private void OnValidate()
+        private IEnumDropdownDefinition _dropdownDefinition;
+
+        public void Initialize(IEnumDropdownDefinition entry)
         {
-            if (label is not null)
-            {
-                label.text = labelText;
-            }
-
-            if (dropdown is not null)
-            {
-                PopulatePreview();
-            }
-        }
-        
-        private enum PreviewEnum { Alpha, Bravo, Charlie }
-        
-        [SerializeField] private PreviewEnum previewValue = PreviewEnum.Alpha;
-
-        private void PopulatePreview()
-        {
-            // force-populate the dropdown from our PreviewEnum
-            _enumType   = typeof(PreviewEnum);
-            _enumNames  = Enum.GetNames(_enumType).ToList();
-            dropdown.ClearOptions();
-            dropdown.AddOptions(_enumNames);
-
-            var idx = _enumNames.IndexOf(previewValue.ToString());
-            dropdown.SetValueWithoutNotify(idx);
+            _dropdownDefinition = entry ?? throw new ArgumentNullException(nameof(entry));
             
-            dropdown.onValueChanged.RemoveAllListeners();
-            dropdown.onValueChanged.AddListener(i =>
-            {
-                previewValue = (PreviewEnum) Enum.Parse(_enumType, _enumNames[i]);
-                UnityEditor.EditorUtility.SetDirty(this);
-            });
-        }
-#endif
-
-        private ConfigEntryBase _entry;
-        private Type _enumType;
-        private List<string> _enumNames;
-        private Action _unregister;
-        
-        public void Initialize<T>(ConfigEntry<T> entry) where T: Enum
-        {
-            _entry = entry;
-            _enumType = entry.SettingType;
-            label.text = entry.Definition.Key;
-
-            _enumNames = Enum.GetNames(_enumType).ToList();
-            var selectedIndex = _enumNames.FindIndex(member => member == Enum.GetName(_enumType, _entry.BoxedValue));
+            label.text = entry.Name;
             dropdown.ClearOptions();
-            dropdown.AddOptions(_enumNames);
-            dropdown.SetValueWithoutNotify(selectedIndex);
+            dropdown.AddOptions(entry.Options);
+            dropdown.SetValueWithoutNotify(entry.SelectedIndex);
             
             entry.SettingChanged += OnSettingChanged;
-            _unregister = () => entry.SettingChanged -= OnSettingChanged;
         }
 
         private void OnEnable()
@@ -88,21 +37,21 @@ namespace IslandConfig.Controllers.UI
 
         private void OnSettingChanged(object sender, EventArgs e)
         {
-            var selectedIndex = _enumNames.FindIndex(member => member == Enum.GetName(_enumType, _entry.BoxedValue));
-            dropdown.SetValueWithoutNotify(selectedIndex);
+            if (dropdown.value == _dropdownDefinition.SelectedIndex) return;
+            dropdown.SetValueWithoutNotify(_dropdownDefinition.SelectedIndex);
         }
 
         private void OnSelectedIndexChanged(int newIndex)
         {
-            if (_entry is null) return;
-            _entry.BoxedValue = Enum.Parse(_enumType, _enumNames[newIndex]);
+            if (newIndex == _dropdownDefinition.SelectedIndex) return;
+            _dropdownDefinition.SelectedIndex = newIndex;
         }
 
         private void OnDestroy()
         {
-            if (_entry is not null && _unregister is not null)
+            if (_dropdownDefinition is not null)
             {
-                _unregister();
+                _dropdownDefinition.SettingChanged -= OnSettingChanged;
             }
         }
     }
