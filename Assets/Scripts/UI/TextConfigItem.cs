@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using UnityEngine;
 
 namespace IslandConfig.UI
 {
@@ -7,5 +8,14 @@ namespace IslandConfig.UI
         public TextConfigItem(ConfigEntry<string> configEntry) : base(configEntry)
         {
         }
+        
+#if UNITY_EDITOR
+        internal override GameObject CreatePrefab()
+        {
+            var obj = Object.Instantiate(IslandConfigAssets.EditorTextPrefab);
+            obj.Initialize(this);
+            return obj.gameObject;
+        }
+#endif
     }
 }

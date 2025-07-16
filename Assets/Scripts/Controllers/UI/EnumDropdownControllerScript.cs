@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace IslandConfig.Controllers.UI
 {
-    internal class EnumDropdownController : MonoBehaviour
+    internal class EnumDropdownControllerScript : MonoBehaviour
     {
         [Header("UI References")] 
         [SerializeField] private TMP_Dropdown dropdown;

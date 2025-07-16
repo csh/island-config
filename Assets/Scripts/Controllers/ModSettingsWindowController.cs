@@ -30,10 +30,22 @@ namespace IslandConfig.Controllers
         private static IEnumerable<(string modGuid, string modName)> GetDummyMods()
         {
             yield return ("com.smrkn.island-config", "IslandConfig");
-            yield return ("com.smrkn.example-mod-1", "Example Mod");
-            yield return ("com.smrkn.example-mod-2", "Example Mod 2");
+            yield return ("com.smrkn.debug-mod-1", "Debug Mod 1");
+            yield return ("com.smrkn.debug-mod-2", "Debug Mod 2");
         }
 
+        private static readonly Dictionary<string, List<BepInConfigWrapper>> DebugModSettings = new();
+        private static ConfigFile _config;
+        
+        [ContextMenu("Debug: Populate Prefabs")]
+        private void EditorPopulatePrefabs()
+        {
+            IslandConfigAssets.EditorCheckboxPrefab = checkboxControllerPrefab;
+            IslandConfigAssets.EditorSliderPrefab = sliderControllerPrefab;
+            IslandConfigAssets.EditorTextPrefab = textControllerPrefab;
+            Debug.Log("Prefab list populated");
+        }
+        
         [ContextMenu("Debug: Populate Mod List")]
         private void EditorPopulateModList()
         {
@@ -51,10 +63,9 @@ namespace IslandConfig.Controllers
         [ContextMenu("Debug: Populate Settings Panel")]
         private void EditorPopulateSettingsPanel()
         {
-            const int startIndex = 5;
             if (!Application.isPlaying)
             {
-                for (var i = settingsList.childCount - 1; i >= startIndex; i--)
+                for (var i = settingsList.childCount - 1; i >= 0; i--)
                 {
                     var child = settingsList.GetChild(i).gameObject;
                     DestroyImmediate(child);
@@ -77,13 +88,21 @@ namespace IslandConfig.Controllers
 
             propertyInfo.SetValue(null, rootCfgPath);
 
-            var config = new ConfigFile(cfgPath, false);
-            var sliders = new List<INumericSliderDefinition>
+            _config = new ConfigFile(cfgPath, false);
+
+            DebugModSettings["com.smrkn.island-config"] = new List<BepInConfigWrapper>()
+            {
+                new TextConfigItem(_config.Bind("General", "Plugin Name", "Island Config")),
+                new CheckboxConfigItem(_config.Bind("General", "Enable", true)),
+                new IntSliderConfigItem(Bind(0, 0, 10)),
+                new ByteSliderConfigItem(Bind<byte>(0, 1, 3))
+            };
+
+            DebugModSettings["com.smrkn.debug-mod-1"] = new List<BepInConfigWrapper>()
             {
                 new ByteSliderConfigItem(
                     Bind<byte>(5, 0, 10)
                 ),
-
                 new ShortSliderConfigItem(
                     Bind<short>(5, 0, 100)
                 ),
@@ -100,24 +119,20 @@ namespace IslandConfig.Controllers
                     Bind(0m, -100m, 100m)
                 )
             };
-
-            foreach (var def in sliders)
-            {
-                var sliderGameObject = Instantiate(sliderControllerPrefab, settingsList);
-                sliderGameObject.Initialize(def);
-            }
-
-            var textGameObject = Instantiate(textControllerPrefab, settingsList);
-            textGameObject.Initialize(new TextConfigItem(config.Bind("Debug", "Debug string", "Example text input")));
             
-            var checkboxGameObject = Instantiate(checkboxControllerPrefab, settingsList);
-            checkboxGameObject.Initialize(new CheckboxConfigItem(config.Bind("Debug", "Debug checkbox", true)));
-
+            DebugModSettings["com.smrkn.debug-mod-2"] = new List<BepInConfigWrapper>()
+            {
+                new TextConfigItem(_config.Bind("General", "Something Practical", "Dummy Config")),
+                new ByteSliderConfigItem(
+                    Bind<byte>(5, 0, 10)
+                ),
+            };
+            
             return;
 
             ConfigEntry<T> Bind<T>(T defaultValue, T minValue, T maxValue) where T : IComparable
             {
-                return config.Bind("Debug", $"Debug {typeof(T).Name}", defaultValue,
+                return _config.Bind("Debug", $"Debug {typeof(T).Name}", defaultValue,
                     new ConfigDescription($"{typeof(T).Name} test slider",
                         new AcceptableValueRange<T>(minValue, maxValue)));
             }
@@ -132,6 +147,7 @@ namespace IslandConfig.Controllers
             IEnumerable<(string modGuid, string modName)> modList;
 #if UNITY_EDITOR
             modList = GetDummyMods();
+            EditorPopulateSettingsPanel();
 #else
             IslandConfig.GenerateConfigs();
 
@@ -154,6 +170,13 @@ namespace IslandConfig.Controllers
             for (var i = modListContent.childCount - 1; i >= 0; i--)
             {
                 var child = modListContent.GetChild(i).gameObject;
+                var modListEntry = child.GetComponent<ModListEntryController>();
+
+                if (modListEntry is not null)
+                {
+                    modListEntry.OnClicked -= OnModSelected;
+                }
+
 #if UNITY_EDITOR
                 DestroyImmediate(child);
 #else
@@ -191,7 +214,50 @@ namespace IslandConfig.Controllers
 
         private void OnModSelected(string guid)
         {
+            // TODO: Check for dirty config wrappers before navigating away.
+
             Debug.Log($"Display the settings for {guid}");
+            for (var i = settingsList.childCount - 1; i >= 0; i--)
+            {
+                var child = settingsList.GetChild(i).gameObject;
+#if UNITY_EDITOR
+                DestroyImmediate(child);
+#else
+                Destroy(child);
+#endif
+            }
+
+#if UNITY_EDITOR
+            if (!DebugModSettings.TryGetValue(guid, out var wrappers))
+            {
+                Debug.LogWarning($"[IslandConfig] Could not find config wrappers for {guid}");
+                return;
+            }
+#else
+            if (!Chainloader.PluginInfos.TryGetValue(guid, out var info))
+            {
+                Debug.LogWarning($"[IslandConfig] Could not find PluginInfo for {guid}");
+                return;
+            }
+
+            if (!IslandConfig.ConfigsByPlugin.TryGetValue(info, out var wrappers))
+            {
+                Debug.LogWarning($"[IslandConfig] Could not find config wrappers for {guid}");
+                return;
+            }
+#endif
+
+            var grouped = wrappers.GroupBy(wrapper => wrapper.Section).OrderBy(wrapper => wrapper.Key);
+
+            foreach (var group in grouped)
+            {
+                foreach (var wrapper in group.OrderBy(w => w.Name))
+                {
+                    var configItem = wrapper.CreatePrefab();
+                    
+                    configItem.transform.SetParent(settingsList, false);
+                }
+            }
         }
     }
 }
