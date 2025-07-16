@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using UnityEngine;
 
 namespace IslandConfig
 {
@@ -30,6 +33,20 @@ namespace IslandConfig
             
             Instance = this;
             Logger = base.Logger;
+
+            var assemblyFolder = Assembly.GetExecutingAssembly().Location;
+            var bundlePath = Path.Combine(assemblyFolder, "islandconfigui");
+            var bundle = AssetBundle.LoadFromFile(bundlePath);
+
+            if (bundle == null)
+            {
+                Logger.LogError("Failed to load UI AssetBundle!");
+                return;
+            }
+            
+#if !UNITY_EDITOR
+            IslandConfigAssets.Init(bundle);
+#endif      
             
             _harmony = new Harmony(IslandConfigPluginInfo.Guid);
             _harmony.PatchAll();
