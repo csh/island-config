@@ -35,7 +35,7 @@ namespace IslandConfig
             Logger = base.Logger;
 
             var assemblyFolder = Assembly.GetExecutingAssembly().Location;
-            var bundlePath = Path.Combine(assemblyFolder, "islandconfigui");
+            var bundlePath = Path.Combine(Path.GetDirectoryName(assemblyFolder)!, "islandconfigui");
             var bundle = AssetBundle.LoadFromFile(bundlePath);
 
             if (bundle == null)
