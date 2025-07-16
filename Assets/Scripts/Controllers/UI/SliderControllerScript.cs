@@ -35,10 +35,24 @@ namespace IslandConfig.Controllers.UI
             label.text = entry.Name;
             slider.minValue = entry.Min;
             slider.maxValue = entry.Max;
-            slider.value = entry.FloatValue;
             slider.wholeNumbers = entry.IsWholeNumberType;
-            slider.onValueChanged.AddListener(OnSliderValueChanged);
+            slider.SetValueWithoutNotify(entry.FloatValue);
             entry.AddChangeHandler(OnSettingChanged);
+        }
+
+        private void OnEnable()
+        {
+            slider?.onValueChanged.AddListener(OnSliderValueChanged);
+        }
+
+        private void OnDisable()
+        {
+            slider?.onValueChanged.RemoveListener(OnSliderValueChanged);
+        }
+        
+        private void OnDestroy()
+        {
+            _sliderDefinition?.RemoveChangeHandler(OnSettingChanged);
         }
 
         private void OnSettingChanged(object sender, EventArgs e)
@@ -52,12 +66,6 @@ namespace IslandConfig.Controllers.UI
             Debug.Log($"Slider value: {value}");
             if (_sliderDefinition is null || Mathf.Approximately(_sliderDefinition.FloatValue, value)) return;
             _sliderDefinition.FloatValue = value;
-        }
-        
-        private void OnDestroy()
-        {
-            slider?.onValueChanged.RemoveListener(OnSliderValueChanged);
-            _sliderDefinition?.RemoveChangeHandler(OnSettingChanged);
         }
     }
 }

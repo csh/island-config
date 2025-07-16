@@ -43,8 +43,17 @@ namespace IslandConfig.Controllers.UI
 
             label.text = entry.Name;
             toggle.isOn = entry.Value;
-            toggle.onValueChanged.AddListener(OnToggleValueChanged);
             entry.ConfigEntry.SettingChanged += OnSettingChanged;
+        }
+
+        private void OnEnable()
+        {
+            toggle?.onValueChanged.AddListener(OnToggleValueChanged);
+        }
+
+        private void OnDisable()
+        {
+            toggle?.onValueChanged.RemoveListener(OnToggleValueChanged);
         }
 
         private void OnSettingChanged(object sender, EventArgs e)
@@ -61,11 +70,6 @@ namespace IslandConfig.Controllers.UI
 
         private void OnDestroy()
         {
-            if (toggle is not null)
-            {
-                toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
-            }
-            
             if (_entry is not null)
             {
                 _entry.ConfigEntry.SettingChanged -= OnSettingChanged;

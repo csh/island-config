@@ -17,13 +17,8 @@ namespace IslandConfig.Controllers.UI
         {
             _entry = entry ?? throw new ArgumentNullException(nameof(entry));
             label.text = entry.Name;
-            textInput.text = entry.Value;
+            textInput.SetTextWithoutNotify(entry.Value);
             _entry.ConfigEntry.SettingChanged += OnConfigEntryChanged;
-        }
-
-        private void OnConfigEntryChanged(object sender, EventArgs e)
-        {
-            textInput?.SetTextWithoutNotify(_entry.Value);
         }
 
         private void OnEnable()
@@ -34,6 +29,11 @@ namespace IslandConfig.Controllers.UI
         private void OnDisable()
         {
             textInput?.onValueChanged.RemoveListener(OnTextInputChanged);
+        }
+
+        private void OnConfigEntryChanged(object sender, EventArgs e)
+        {
+            textInput?.SetTextWithoutNotify(_entry.Value);
         }
 
         private void OnTextInputChanged(string value)

@@ -72,9 +72,18 @@ namespace IslandConfig.Controllers.UI
             dropdown.AddOptions(_enumNames);
             dropdown.SetValueWithoutNotify(selectedIndex);
             
-            dropdown.onValueChanged.AddListener(OnSelectedIndexChanged);
             entry.SettingChanged += OnSettingChanged;
             _unregister = () => entry.SettingChanged -= OnSettingChanged;
+        }
+
+        private void OnEnable()
+        {
+            dropdown?.onValueChanged.AddListener(OnSelectedIndexChanged);
+        }
+
+        private void OnDisable()
+        {
+            dropdown?.onValueChanged.RemoveListener(OnSelectedIndexChanged);
         }
 
         private void OnSettingChanged(object sender, EventArgs e)
@@ -91,8 +100,6 @@ namespace IslandConfig.Controllers.UI
 
         private void OnDestroy()
         {
-            dropdown?.onValueChanged.RemoveListener(OnSelectedIndexChanged);
-
             if (_entry is not null && _unregister is not null)
             {
                 _unregister();

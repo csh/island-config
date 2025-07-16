@@ -108,7 +108,7 @@ namespace IslandConfig.UI
 
         private void OnSettingChanged(object sender, EventArgs e)
         {
-            CurrentBoxedValue = Value;
+            CurrentBoxedValue = ConfigEntry.BoxedValue;
         }
 
         internal override GameObject CreatePrefab()
