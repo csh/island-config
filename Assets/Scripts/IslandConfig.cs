@@ -103,6 +103,15 @@ namespace IslandConfig
             return this;
         }
 
+        public ConfigBuilder WithTextInput(ConfigEntry<string> configEntry, string section = null, string label = null,
+            string description = null)
+        {
+            var wrapper = new TextConfigItem(configEntry);
+            SetCustomAttributes(wrapper, section, label, description);
+            Configs[configEntry] = wrapper;
+            return this;
+        }
+
         #region Numeric sliders
 
         public ConfigBuilder WithSlider(ConfigEntry<byte> configEntry, string section = null, string label = null,

@@ -44,7 +44,9 @@ namespace IslandConfig.Controllers
             PopulateModList(_allMods);
         }
 
+        [SerializeField] private CheckboxControllerScript checkboxControllerPrefab;
         [SerializeField] private SliderControllerScript sliderControllerPrefab;
+        [SerializeField] private TextControllerScript textControllerPrefab;
 
         [ContextMenu("Debug: Populate Settings Panel")]
         private void EditorPopulateSettingsPanel()
@@ -104,6 +106,12 @@ namespace IslandConfig.Controllers
                 var sliderGameObject = Instantiate(sliderControllerPrefab, settingsList);
                 sliderGameObject.Initialize(def);
             }
+
+            var textGameObject = Instantiate(textControllerPrefab, settingsList);
+            textGameObject.Initialize(new TextConfigItem(config.Bind("Debug", "Debug string", "Example text input")));
+            
+            var checkboxGameObject = Instantiate(checkboxControllerPrefab, settingsList);
+            checkboxGameObject.Initialize(new CheckboxConfigItem(config.Bind("Debug", "Debug checkbox", true)));
 
             return;
 

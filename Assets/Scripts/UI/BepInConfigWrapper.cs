@@ -98,9 +98,13 @@ namespace IslandConfig.UI
             }
         }
 
-        protected new ConfigEntry<T> ConfigEntry => (ConfigEntry<T>)base.ConfigEntry;
+        internal new ConfigEntry<T> ConfigEntry => (ConfigEntry<T>)base.ConfigEntry;
 
-        protected T Value => ConfigEntry.Value;
+        internal T Value
+        {
+            get => (T)CurrentBoxedValue;
+            set => CurrentBoxedValue = value;
+        }
 
         private void OnSettingChanged(object sender, EventArgs e)
         {

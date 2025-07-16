@@ -620,6 +620,9 @@ MonoBehaviour:
   modListEntryControllerPrefab: {fileID: 2644756673296159460, guid: ac6d8fc924564b44fac3c3a40f108929, type: 3}
   settingsList: {fileID: 7291082436422310255}
   searchInput: {fileID: 7736253809799997629}
+  checkboxControllerPrefab: {fileID: 8796234947804847609, guid: fe3413f99a2072a4d97c412e96248b81, type: 3}
+  sliderControllerPrefab: {fileID: 5707997576428675767, guid: f08ab3f6ee7877c4db7968a8245f6731, type: 3}
+  textControllerPrefab: {fileID: 5594755589392459980, guid: bdce4f5b2cfe58740a6c87a79589bb60, type: 3}
 --- !u!1 &2930778062368562972
 GameObject:
   m_ObjectHideFlags: 0

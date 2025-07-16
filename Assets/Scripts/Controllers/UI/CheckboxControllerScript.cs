@@ -1,5 +1,6 @@
 using System;
 using BepInEx.Configuration;
+using IslandConfig.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,16 +35,16 @@ namespace IslandConfig.Controllers.UI
         }
 #endif
 
-        private ConfigEntry<bool> _entry;
+        private CheckboxConfigItem _entry;
 
-        public void Initialize(ConfigEntry<bool> entry)
+        public void Initialize(CheckboxConfigItem entry)
         {
             _entry = entry ?? throw new ArgumentNullException(nameof(entry));
 
-            label.text = entry.Definition.Key;
+            label.text = entry.Name;
             toggle.isOn = entry.Value;
             toggle.onValueChanged.AddListener(OnToggleValueChanged);
-            entry.SettingChanged += OnSettingChanged;
+            entry.ConfigEntry.SettingChanged += OnSettingChanged;
         }
 
         private void OnSettingChanged(object sender, EventArgs e)
@@ -67,7 +68,7 @@ namespace IslandConfig.Controllers.UI
             
             if (_entry is not null)
             {
-                _entry.SettingChanged -= OnSettingChanged;
+                _entry.ConfigEntry.SettingChanged -= OnSettingChanged;
             }
         }
     }
