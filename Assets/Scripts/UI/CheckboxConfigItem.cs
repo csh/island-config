@@ -31,7 +31,7 @@ namespace IslandConfig.UI
         event EventHandler IGenericConfigurable.SettingChanged
         {
             add => ConfigEntry.SettingChanged += value;
-            remove => ConfigEntry.SettingChanged += value;
+            remove => ConfigEntry.SettingChanged -= value;
         }
     }
 }
