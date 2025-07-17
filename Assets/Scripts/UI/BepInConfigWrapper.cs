@@ -110,11 +110,6 @@ namespace IslandConfig.UI
             CurrentBoxedValue = ConfigEntry.BoxedValue;
         }
 
-        internal string GetGameObjectName()
-        {
-            return $"{Section}.{Name}";
-        }
-
         public abstract void Dispose();
     }
 
