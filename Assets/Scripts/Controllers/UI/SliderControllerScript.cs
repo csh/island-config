@@ -12,8 +12,8 @@ namespace IslandConfig.Controllers.UI
         [Header("UI References")] 
         [SerializeField] private Slider slider;
         [SerializeField] private TextMeshProUGUI label;
-        [SerializeField] private TextMeshProUGUI hoverNameTarget;
-        [SerializeField] private TextMeshProUGUI hoverDescTarget;
+        [SerializeField] private TextMeshProUGUI hoverName;
+        [SerializeField] private TextMeshProUGUI hoverDesc;
         
 #if UNITY_EDITOR
         [Header("Debugging")]
@@ -35,8 +35,8 @@ namespace IslandConfig.Controllers.UI
             TextMeshProUGUI hoverDescTarget)
         {
             _sliderDefinition = entry ?? throw new ArgumentNullException(nameof(entry));
-            this.hoverNameTarget = hoverNameTarget;
-            this.hoverDescTarget = hoverDescTarget;
+            this.hoverName = hoverNameTarget;
+            this.hoverDesc = hoverDescTarget;
             label.text = entry.Name;
             slider.minValue = entry.Min;
             slider.maxValue = entry.Max;
@@ -77,8 +77,8 @@ namespace IslandConfig.Controllers.UI
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (hoverNameTarget is not null) hoverNameTarget.text = _sliderDefinition.Name;
-            if (hoverDescTarget is not null) hoverDescTarget.text = _sliderDefinition.Description;
+            if (hoverName is not null) hoverName.text = _sliderDefinition.Name;
+            if (hoverDesc is not null) hoverDesc.text = _sliderDefinition.Description;
         }
     }
 }
