@@ -49,7 +49,7 @@ namespace IslandConfig
 
             var pluginInfo =
                 Chainloader.PluginInfos.Values.FirstOrDefault(pluginInfos =>
-                    pluginInfos.Instance.GetType().Assembly == caller);
+                    pluginInfos.Instance?.GetType().Assembly == caller);
 
             if (pluginInfo == null)
             {

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using IslandConfig.Patches;
 using UnityEngine;
 
 namespace IslandConfig
@@ -76,14 +78,13 @@ namespace IslandConfig
 #if !UNITY_EDITOR
             IslandConfigAssets.Init(bundle);
 #endif
-            
             PluginConfig.Init(Config);
             
             _harmony = new Harmony(IslandConfigPluginInfo.Guid);
-            _harmony.PatchAll();
+            _harmony.PatchAll(typeof(MainMenuPatches));
             
             Logger.LogInfo($"Loaded {IslandConfigPluginInfo.Name}");
-
+            
             var count = 0;
             foreach (var patchedMethod in _harmony.GetPatchedMethods())
             {
@@ -91,6 +92,12 @@ namespace IslandConfig
                 count++;
             }
             Logger.LogInfo($"Applied {count} patches.");
+        }
+
+        private void Start()
+        {
+            Logger.LogDebug("Attempting to register configuration UI");
+            PluginConfig.InitUserInterface();
         }
 
         private void OnDestroy()

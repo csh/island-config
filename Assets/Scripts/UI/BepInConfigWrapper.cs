@@ -113,7 +113,7 @@ namespace IslandConfig.UI
         public abstract void Dispose();
     }
 
-    public abstract class BepInConfigWrapper<T> : BepInConfigWrapper
+    public abstract class BepInConfigWrapper<T> : BepInConfigWrapper, IGenericConfigurable
     {
         private bool _disposed;
         
@@ -136,6 +136,15 @@ namespace IslandConfig.UI
         private void OnSettingChanged(object sender, EventArgs e)
         {
             CurrentBoxedValue = ConfigEntry.BoxedValue;
+        }
+        
+        string IGenericConfigurable.Name => Name;
+        string IGenericConfigurable.Section => Section;
+        string IGenericConfigurable.Description => Description;
+        event System.EventHandler IGenericConfigurable.SettingChanged
+        {
+            add => ConfigEntry.SettingChanged += value;
+            remove => ConfigEntry.SettingChanged -= value;
         }
 
         internal override GameObject CreatePrefab(TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
@@ -167,6 +176,6 @@ namespace IslandConfig.UI
         string Name { get; }
         string Section { get; }
         string Description { get; }
-        event EventHandler SettingChanged;
+        event System.EventHandler SettingChanged;
     }
 }

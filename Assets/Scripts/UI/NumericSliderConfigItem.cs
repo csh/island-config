@@ -69,16 +69,6 @@ namespace IslandConfig.UI
             get => Convert.ToSingle(CurrentBoxedValue);
             set => UpdateFromFloat(value);
         }
-
-        string IGenericConfigurable.Name => base.Name;
-        string IGenericConfigurable.Section => base.Section;
-        string IGenericConfigurable.Description => base.Description;
-
-        event EventHandler IGenericConfigurable.SettingChanged
-        {
-            add => ConfigEntry.SettingChanged += value;
-            remove => ConfigEntry.SettingChanged -= value;
-        }
         
         internal override GameObject CreatePrefab(TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
         {

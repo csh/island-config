@@ -38,15 +38,6 @@ namespace IslandConfig.UI
             return prefab.gameObject;
         }
 
-        string IGenericConfigurable.Name => Name;
-        string IGenericConfigurable.Section => Section;
-        string IGenericConfigurable.Description => Description;
-        event EventHandler IGenericConfigurable.SettingChanged
-        {
-            add => ConfigEntry.SettingChanged += value;
-            remove => ConfigEntry.SettingChanged -= value;
-        }
-
         int IDropdownDefinition.SelectedIndex
         {
             get => Options.IndexOf(Value);

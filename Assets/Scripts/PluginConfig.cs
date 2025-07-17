@@ -9,7 +9,10 @@ namespace IslandConfig
         public static void Init(ConfigFile config)
         {
             AutoGenerateUI = config.Bind("IslandConfig", "AutoUI", true);
-            
+        }
+
+        internal static void InitUserInterface()
+        {
             IslandConfig.Register(builder =>
             {
                 builder.WithCheckbox(

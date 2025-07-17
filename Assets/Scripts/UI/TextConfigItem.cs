@@ -1,5 +1,4 @@
-﻿using System;
-using BepInEx.Configuration;
+﻿using BepInEx.Configuration;
 using IslandConfig.Controllers.UI;
 using TMPro;
 using UnityEngine;
@@ -23,15 +22,6 @@ namespace IslandConfig.UI
             var controller = prefab.GetComponent<TextControllerScript>();
             controller.Initialize(this, hoverNameTarget, hoverDescTarget);
             return prefab.gameObject;
-        }
-
-        string IGenericConfigurable.Name => Name;
-        string IGenericConfigurable.Section => Section;
-        string IGenericConfigurable.Description => Description;
-        event EventHandler IGenericConfigurable.SettingChanged
-        {
-            add => ConfigEntry.SettingChanged += value;
-            remove => ConfigEntry.SettingChanged -= value;
         }
 
         string ITextInputDefinition.Value

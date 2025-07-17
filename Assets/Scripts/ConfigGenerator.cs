@@ -10,9 +10,9 @@ namespace IslandConfig
     {
         internal static IEnumerable<BepInConfigWrapper> Generate(PluginInfo pluginInfo, ConfigFile config)
         {
-            foreach (var definition in config.Keys)
+            foreach (var pair in config)
             {
-                var wrapped = WrapEntry(config[definition]);
+                var wrapped = WrapEntry(pair.Value);
                 wrapped.Owner = pluginInfo;
                 yield return wrapped;
             }

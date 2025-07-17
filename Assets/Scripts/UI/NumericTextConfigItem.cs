@@ -24,16 +24,6 @@ namespace IslandConfig.UI
         {
         }
 
-        string IGenericConfigurable.Name => Name;
-        string IGenericConfigurable.Section => Section;
-        string IGenericConfigurable.Description => Description;
-        
-        event EventHandler IGenericConfigurable.SettingChanged
-        {
-            add => ConfigEntry.SettingChanged += value;
-            remove => ConfigEntry.SettingChanged -= value;
-        }
-
         string ITextInputDefinition.Value
         {
             get => Value.ToString();

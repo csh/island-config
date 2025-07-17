@@ -155,3 +155,6 @@ sysinfo.txt
 # End of https://www.toptal.com/developers/gitignore/api/rider,unity
 
 AssetBundles
+Assets/ExternalAssemblies/Game/*.dll
+Assets/ExternalAssemblies/Game/*.meta
+Assets/ExternalAssemblies/Game.meta
