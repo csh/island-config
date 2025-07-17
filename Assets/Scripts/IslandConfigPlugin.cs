@@ -24,6 +24,28 @@ namespace IslandConfig
         static IslandConfigPlugin()
         {
             Logger = BepInEx.Logging.Logger.CreateLogSource("IslandConfigEditor");
+            Logger.LogEvent += (sender, args) =>
+            {
+                switch (args.Level)
+                {
+                    case LogLevel.Error:
+                    case LogLevel.Fatal:
+                        Debug.LogError(args.ToString());
+                        break;
+                    case LogLevel.Warning:
+                        Debug.LogWarning(args.ToString());
+                        break;
+                    case LogLevel.Debug:
+                    case LogLevel.Info:
+                    case LogLevel.Message:
+                        Debug.Log(args.ToString());
+                        break;
+                    case LogLevel.None:
+                    case LogLevel.All:
+                    default:
+                        return;
+                }
+            };
         }
 #endif
         

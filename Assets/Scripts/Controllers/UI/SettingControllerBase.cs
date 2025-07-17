@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 
 namespace IslandConfig.Controllers.UI
 {
+    [DisallowMultipleComponent]
     internal abstract class SettingsControllerBase : MonoBehaviour
     {
         [Header("UI References")]

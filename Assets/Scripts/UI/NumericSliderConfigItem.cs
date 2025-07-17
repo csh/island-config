@@ -17,8 +17,8 @@ namespace IslandConfig.UI
     
     public abstract class NumericSliderConfigItem<T> : BepInConfigWrapper<T>, INumericSliderDefinition where T : IComparable, IConvertible
     {
-        public T MinValue { get; protected set; }
-        public T MaxValue { get; protected set; }
+        private T MinValue { get; }
+        private T MaxValue { get; }
 
         protected NumericSliderConfigItem(ConfigEntry<T> configEntry, bool isWholeNumberType, T defaultMinValue, T defaultMaxValue) : base(configEntry)
         {

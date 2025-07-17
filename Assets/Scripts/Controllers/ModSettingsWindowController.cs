@@ -103,12 +103,12 @@ namespace IslandConfig.Controllers
 
             _config = new ConfigFile(cfgPath, false);
 
-            DebugModSettings[IslandConfigPluginInfo.Guid] = new List<BepInConfigWrapper>()
+            DebugModSettings[IslandConfigPluginInfo.Guid] = new List<BepInConfigWrapper>
             {
                 new TextConfigItem(_config.Bind("General", "Plugin Name", "Island Config")),
                 new CheckboxConfigItem(_config.Bind("General", "Enable", true)),
                 new IntSliderConfigItem(BindNumericSlider(0, 0, 10)),
-                new ByteSliderConfigItem(BindNumericSlider<byte>(0, 1, 3)),
+                new ByteSliderConfigItem(BindNumericSlider<byte>(1, 0, 3)),
                 
                 new EnumDropdownConfigItem<TestEnum>(_config.Bind("Dropdowns", "Enum", TestEnum.Lorem)),
                 
@@ -121,7 +121,7 @@ namespace IslandConfig.Controllers
                         new AcceptableValueList<int>(10, 15, 25))))
             };
 
-            DebugModSettings["com.smrkn.debug-mod-1"] = new List<BepInConfigWrapper>()
+            DebugModSettings["com.smrkn.debug-mod-1"] = new List<BepInConfigWrapper>
             {
                 new ByteSliderConfigItem(
                     BindNumericSlider<byte>(5, 0, 10)
@@ -140,7 +140,7 @@ namespace IslandConfig.Controllers
                 ),
                 new DecimalSliderConfigItem(
                     BindNumericSlider(0m, -100m, 100m)
-                ),
+                )
             };
 
             DebugModSettings["com.smrkn.debug-mod-2"] = new List<BepInConfigWrapper>()
@@ -187,7 +187,10 @@ namespace IslandConfig.Controllers
                     IslandConfig.ConfigsByPlugin.TryGetValue(pi, out var wrappers) && wrappers.Count > 0)
                 .Select(pi => (pi.Metadata.GUID, pi.Metadata.Name));
 #endif
+            
             _allMods = modList.OrderBy(tuple => tuple.modName, StringComparer.OrdinalIgnoreCase).ToList();
+            
+            IslandConfigPlugin.Logger.LogInfo($"Loaded {_allMods.Count} mods");
             PopulateModList(_allMods);
 
             OnModSelected(IslandConfigPluginInfo.Guid);
@@ -196,7 +199,7 @@ namespace IslandConfig.Controllers
             revertButton?.onClick.AddListener(RevertPendingChanges);
         }
 
-        private void SavePendingChanges()
+        private static void SavePendingChanges()
         {
 #if UNITY_EDITOR
             var dirtyWrappers = DebugModSettings.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
@@ -346,7 +349,6 @@ namespace IslandConfig.Controllers
                 foreach (var wrapper in group)
                 {
                     var configItem = wrapper.CreatePrefab(hoverTextName, hoverTextDescription);
-
                     configItem.transform.SetParent(settingsList, false);
                 }
             }
