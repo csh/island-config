@@ -25,18 +25,17 @@ namespace IslandConfig
             {
                 if (pluginInfo.Instance.Config.Count < 1)
                 {
-                    Debug.Log(
-                        $"[IslandConfig] Plugin {pluginInfo.Metadata.Name} has no configs to generate entries for");
+                    IslandConfigPlugin.Logger.LogDebug($"Plugin {pluginInfo.Metadata.Name} has no configs to generate entries for");
                     continue;
                 }
 
                 if (ConfigsByPlugin.TryGetValue(pluginInfo, out _))
                 {
-                    Debug.Log($"[IslandConfig] Plugin {pluginInfo.Metadata.Name} has already registered configuration");
+                    IslandConfigPlugin.Logger.LogDebug($"Plugin {pluginInfo.Metadata.Name} has already registered configurations");
                     continue;
                 }
 
-                Debug.Log($"[IslandConfig] Generating configs for {pluginInfo.Metadata.Name}");
+                IslandConfigPlugin.Logger.LogDebug($"Generating configs for {pluginInfo.Metadata.Name}");
                 var wrapped = ConfigGenerator.Generate(pluginInfo, pluginInfo.Instance.Config);
                 ConfigsByPlugin.Add(pluginInfo, wrapped.ToList());
             }
@@ -53,12 +52,14 @@ namespace IslandConfig
                     pluginInfos.Instance.GetType().Assembly == caller);
 
             if (pluginInfo == null)
+            {
                 throw new InvalidOperationException(
                     $"Could not find a BaseUnityPlugin with [BepInPlugin] in {caller.FullName}");
+            }
 
             var pluginMeta = pluginInfo.Metadata;
-            Debug.Log(
-                $"[IslandConfig] Registering config UI for plugin {pluginMeta.Name} ({pluginMeta.GUID}@{pluginMeta.Version})");
+            IslandConfigPlugin.Logger.LogDebug(
+                $"Registering config UI for plugin {pluginMeta.Name} ({pluginMeta.GUID}@{pluginMeta.Version})");
 
             var builder = new ConfigBuilder();
             build(builder);

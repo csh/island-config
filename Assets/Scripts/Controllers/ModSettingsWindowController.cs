@@ -55,7 +55,7 @@ namespace IslandConfig.Controllers
             IslandConfigAssets.EditorCheckboxPrefab = checkboxControllerPrefab;
             IslandConfigAssets.EditorSliderPrefab = sliderControllerPrefab;
             IslandConfigAssets.EditorTextPrefab = textControllerPrefab;
-            Debug.Log("Prefab list populated");
+            IslandConfigPlugin.Logger.LogDebug("Prefab list populated");
         }
 
         [ContextMenu("Debug: Populate Mod List")]
@@ -97,7 +97,7 @@ namespace IslandConfig.Controllers
             var tempDir = Path.Combine(projectRoot!, "Temp");
             var rootCfgPath = Path.Combine(tempDir, "bepinex.cfg");
             var cfgPath = Path.Combine(tempDir, "debug.cfg");
-            Debug.Log($"Using debug config at: {cfgPath}");
+            IslandConfigPlugin.Logger.LogDebug($"Using debug config at: {cfgPath}");
 
             propertyInfo.SetValue(null, rootCfgPath);
 
@@ -181,7 +181,10 @@ namespace IslandConfig.Controllers
             EditorPopulatePrefabs();
             EditorPopulateSettingsPanel();
 #else
-            IslandConfig.GenerateConfigs();
+            if (PluginConfig.AutoGenerateUI.Value)
+            {
+                IslandConfig.GenerateConfigs();
+            }
 
             modList = Chainloader.PluginInfos.Values.Where(pi =>
                     IslandConfig.ConfigsByPlugin.TryGetValue(pi, out var wrappers) && wrappers.Count > 0)
@@ -257,11 +260,12 @@ namespace IslandConfig.Controllers
             searchInput?.onValueChanged.RemoveListener(OnSearchInputUpdated);
             revertButton?.onClick.RemoveListener(RevertPendingChanges);
             saveButton?.onClick.RemoveListener(SavePendingChanges);
+            ClearModList();
         }
 
         private void ClearModList()
         {
-            Debug.Log("Attempting to clear mod list");
+            IslandConfigPlugin.Logger.LogDebug("Attempting to clear mod list");
             for (var i = modListContent.childCount - 1; i >= 0; i--)
             {
                 var child = modListContent.GetChild(i).gameObject;
@@ -284,7 +288,7 @@ namespace IslandConfig.Controllers
         {
             ClearModList();
 
-            Debug.Log("Populating mod list");
+            IslandConfigPlugin.Logger.LogDebug("Populating mod list");
             foreach (var (modGuid, modName) in modList)
             {
                 var entry = Instantiate(modListEntryControllerPrefab, modListContent);
@@ -311,7 +315,7 @@ namespace IslandConfig.Controllers
         {
             // TODO: Check for dirty config wrappers before navigating away.
 
-            Debug.Log($"Display the settings for {guid}");
+            IslandConfigPlugin.Logger.LogDebug($"Display the settings for {guid}");
             for (var i = settingsList.childCount - 1; i >= 0; i--)
             {
                 var child = settingsList.GetChild(i).gameObject;
@@ -325,19 +329,19 @@ namespace IslandConfig.Controllers
 #if UNITY_EDITOR
             if (!DebugModSettings.TryGetValue(guid, out var wrappers))
             {
-                Debug.LogWarning($"[IslandConfig] Could not find config wrappers for {guid}");
+                IslandConfigPlugin.Logger.LogWarning($"Could not find config wrappers for {guid}");
                 return;
             }
 #else
             if (!Chainloader.PluginInfos.TryGetValue(guid, out var info))
             {
-                Debug.LogWarning($"[IslandConfig] Could not find PluginInfo for {guid}");
+                IslandConfigPlugin.Logger.LogWarning($"[IslandConfig] Could not find PluginInfo for {guid}");
                 return;
             }
 
             if (!IslandConfig.ConfigsByPlugin.TryGetValue(info, out var wrappers))
             {
-                Debug.LogWarning($"[IslandConfig] Could not find config wrappers for {guid}");
+                IslandConfigPlugin.Logger.LogWarning($"[IslandConfig] Could not find config wrappers for {guid}");
                 return;
             }
 #endif

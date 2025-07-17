@@ -75,7 +75,9 @@ namespace IslandConfig
             
 #if !UNITY_EDITOR
             IslandConfigAssets.Init(bundle);
-#endif      
+#endif
+            
+            PluginConfig.Init(Config);
             
             _harmony = new Harmony(IslandConfigPluginInfo.Guid);
             _harmony.PatchAll();
