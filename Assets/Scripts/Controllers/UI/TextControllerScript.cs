@@ -2,55 +2,31 @@ using System;
 using IslandConfig.UI;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace IslandConfig.Controllers.UI
 {
-    internal class TextControllerScript : MonoBehaviour, IPointerEnterHandler
+    internal class TextControllerScript : SettingControllerBase<ITextInputDefinition>
     {
-        [Header("UI References")] 
         [SerializeField] private TMP_InputField textInput;
-        [SerializeField] private TextMeshProUGUI label;
-        [SerializeField] private TextMeshProUGUI hoverName;
-        [SerializeField] private TextMeshProUGUI hoverDesc;
-
-        private ITextInputDefinition _definition;
         private Color _defaultTextColour;
         
-        public void Initialize(ITextInputDefinition definition, TextMeshProUGUI hoverNameTarget,
-            TextMeshProUGUI hoverDescTarget)
+        internal override void Initialize(ITextInputDefinition definition, TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
         {
-            _definition = definition ?? throw new ArgumentNullException(nameof(definition));
-            hoverName = hoverNameTarget;
-            hoverDesc = hoverDescTarget;
-            label.text = definition.Name;
+            base.Initialize(definition, hoverNameTarget, hoverDescTarget);
             textInput.SetTextWithoutNotify(definition.Value);
-            definition.SettingChanged += OnConfigEntryChanged;
         }
+        
+        private void Awake() => _defaultTextColour = textInput.textComponent.color;
+        
+        private void OnEnable() => textInput?.onValueChanged.AddListener(OnTextChanged);
 
-        private void Awake()
-        {
-            _defaultTextColour = textInput.textComponent.color;
-        }
+        private void OnDisable() => textInput?.onValueChanged.RemoveListener(OnTextChanged);
 
-        private void OnEnable()
+        private void OnTextChanged(string value)
         {
-            textInput?.onValueChanged.AddListener(OnTextInputChanged);
-        }
-
-        private void OnDisable()
-        {
-            textInput?.onValueChanged.RemoveListener(OnTextInputChanged);
-        }
-
-        private void OnConfigEntryChanged(object sender, EventArgs e)
-        {
-            textInput?.SetTextWithoutNotify(_definition.Value);
-        }
-
-        private void OnTextInputChanged(string value)
-        {
-            if (_definition is INumericTextDefinition numeric)
+            if (Definition is null || string.Equals(Definition.Value, value, StringComparison.InvariantCulture)) return;
+            
+            if (Definition is INumericTextDefinition numeric)
             {
                 if (!numeric.ValidateInput(value))
                 {
@@ -59,21 +35,19 @@ namespace IslandConfig.Controllers.UI
                 }
                 textInput.textComponent.color = _defaultTextColour;
             }
-            _definition.Value = value;
+            Definition.Value = value;
         }
 
-        private void OnDestroy()
+        protected override void OnSettingChanged(object sender, EventArgs e)
         {
-            if (_definition is not null)
-            {
-                _definition.SettingChanged -= OnConfigEntryChanged;
-            }
+            if (textInput is null || string.Equals(textInput.text,  Definition.Value, StringComparison.InvariantCulture)) return;
+            textInput.SetTextWithoutNotify(Definition.Value);
         }
 
-        public void OnPointerEnter(PointerEventData eventData)
+        internal override void ForceUpdateElement()
         {
-            if (hoverName is not null) hoverName.text = _definition.Name;
-            if (hoverDesc is not null) hoverDesc.text = _definition.Description;
+            if (textInput is null || Definition is null) return;
+            textInput.SetTextWithoutNotify(Definition.Value);
         }
     }
 }

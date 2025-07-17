@@ -220,6 +220,12 @@ namespace IslandConfig.Controllers
             {
                 wrapper.Cancel();
             }
+
+            for (var i = settingsList.childCount - 1; i >= 0; i--)
+            {
+                var wrapperInterfaceElement = settingsList.GetChild(i).GetComponent<SettingsControllerBase>();
+                wrapperInterfaceElement.ForceUpdateElement();
+            }
         }
 
         private int _dirtyPollCounter;

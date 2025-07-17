@@ -1,11 +1,13 @@
-﻿using BepInEx.Configuration;
+﻿using System;
+using BepInEx.Configuration;
 using UnityEngine;
 using IslandConfig.Controllers.UI;
 using TMPro;
+using Object = UnityEngine.Object;
 
 namespace IslandConfig.UI
 {
-    public class CheckboxConfigItem : BepInConfigWrapper<bool>
+    public class CheckboxConfigItem : BepInConfigWrapper<bool>, IGenericConfigurable
     {
         public CheckboxConfigItem(ConfigEntry<bool> configEntry) : base(configEntry)
         {
@@ -21,6 +23,15 @@ namespace IslandConfig.UI
             var controller = prefab.GetComponent<CheckboxControllerScript>();
             controller.Initialize(this, hoverNameTarget, hoverDescTarget);
             return prefab;
+        }
+
+        string IGenericConfigurable.Name => Name;
+        string IGenericConfigurable.Section => Section;
+        string IGenericConfigurable.Description => Description;
+        event EventHandler IGenericConfigurable.SettingChanged
+        {
+            add => ConfigEntry.SettingChanged += value;
+            remove => ConfigEntry.SettingChanged += value;
         }
     }
 }
