@@ -8,6 +8,7 @@ using IslandConfig.Controllers.UI;
 using IslandConfig.UI;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 #if !UNITY_EDITOR
 using BepInEx.Bootstrap;
@@ -25,6 +26,8 @@ namespace IslandConfig.Controllers
         [SerializeField] private TMP_InputField searchInput;
         [SerializeField] private TextMeshProUGUI hoverTextName;
         [SerializeField] private TextMeshProUGUI hoverTextDescription;
+        [SerializeField] private Button revertButton;
+        [SerializeField] private Button saveButton;
 
         private List<(string modGuid, string modName)> _allMods;
 
@@ -188,11 +191,63 @@ namespace IslandConfig.Controllers
             PopulateModList(_allMods);
 
             OnModSelected(IslandConfigPluginInfo.Guid);
+
+            saveButton?.onClick.AddListener(SavePendingChanges);
+            revertButton?.onClick.AddListener(RevertPendingChanges);
+        }
+
+        private void SavePendingChanges()
+        {
+#if UNITY_EDITOR
+            var dirtyWrappers = DebugModSettings.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
+#else
+            var dirtyWrappers = IslandConfig.ConfigsByPlugin.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
+#endif
+            foreach (var wrapper in dirtyWrappers)
+            {
+                wrapper.Commit();
+            }
+        }
+
+        private void RevertPendingChanges()
+        {
+#if UNITY_EDITOR
+            var dirtyWrappers = DebugModSettings.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
+#else
+            var dirtyWrappers = IslandConfig.ConfigsByPlugin.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
+#endif
+            foreach (var wrapper in dirtyWrappers)
+            {
+                wrapper.Cancel();
+            }
+        }
+
+        private int _dirtyPollCounter;
+        
+        private void LateUpdate()
+        {
+            /*
+             * Only poll for dirty entries every 30 frames.
+             *
+             * We don't need to run a LINQ query every frame. Ew.
+             */
+            if (++_dirtyPollCounter < 30) return;
+            _dirtyPollCounter = 0;
+            
+#if UNITY_EDITOR
+            var isAnyDirty = DebugModSettings.Any(kvp => kvp.Value.Any(wrapped => wrapped.IsDirty));
+#else
+            var isAnyDirty = IslandConfig.ConfigsByPlugin.Any(kvp => kvp.Value.Any(wrapped => wrapped.IsDirty));
+#endif
+            revertButton.interactable = isAnyDirty;
+            saveButton.interactable = isAnyDirty;
         }
 
         private void OnDisable()
         {
             searchInput?.onValueChanged.RemoveListener(OnSearchInputUpdated);
+            revertButton?.onClick.RemoveListener(RevertPendingChanges);
+            saveButton?.onClick.RemoveListener(SavePendingChanges);
         }
 
         private void ClearModList()
