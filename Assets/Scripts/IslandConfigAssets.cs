@@ -26,6 +26,7 @@ namespace IslandConfig
             _bundle = bundle;
         }
 
+        internal static GameObject SettingsWindowPrefab => _bundle.LoadAsset<GameObject>("Mod Settings Window");
         internal static GameObject DropdownPrefab => _bundle.LoadAsset<GameObject>("Dropdown Config Item");
         internal static GameObject CheckboxPrefab => _bundle.LoadAsset<GameObject>("Toggle Config Item");
         internal static GameObject SliderPrefab => _bundle.LoadAsset<GameObject>("Slider Config Item");

@@ -32,6 +32,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 827810755779020393}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -185,6 +186,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 827810755779020393}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -242,6 +244,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1331202521291796296}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -318,6 +321,7 @@ RectTransform:
   m_Children:
   - {fileID: 1955823008291565615}
   m_Father: {fileID: 1331344223625299501}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -394,6 +398,7 @@ RectTransform:
   m_Children:
   - {fileID: 1331202521291796296}
   m_Father: {fileID: 827810755779020393}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -504,6 +509,7 @@ RectTransform:
   - {fileID: 7824095805712424473}
   - {fileID: 1331344223625299501}
   m_Father: {fileID: 0}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -570,7 +576,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d46fb17f18a81774aac278f757694fa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggle: {fileID: 4652790847901789710}
   label: {fileID: 7696335059198356807}
-  labelText: Settings Label
-  isChecked: 1
+  hoverName: {fileID: 0}
+  hoverDesc: {fileID: 0}
+  toggle: {fileID: 4652790847901789710}
