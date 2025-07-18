@@ -1,5 +1,20 @@
 {
   "dependencies": {
+    "com.bbepis.bepinex": {
+      "version": "file:BepInExPack",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.passivepicasso.thunderkit": {
+      "version": "https://github.com/PassivePicasso/ThunderKit.git#8.0.3",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.scriptablebuildpipeline": "1.16.1"
+      },
+      "hash": "4e3d3c17593fe72bffe9d8c6d32bb53be948c31e"
+    },
     "com.unity.collab-proxy": {
       "version": "2.5.2",
       "depth": 0,
@@ -67,6 +82,13 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.scriptablebuildpipeline": {
+      "version": "1.20.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
     "com.unity.settings-manager": {
       "version": "1.0.3",
       "depth": 2,
@@ -112,6 +134,12 @@
         "com.unity.modules.ui": "1.0.0",
         "com.unity.modules.imgui": "1.0.0"
       }
+    },
+    "len_sisland": {
+      "version": "file:Len's Island",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
     },
     "com.unity.modules.animation": {
       "version": "1.0.0",

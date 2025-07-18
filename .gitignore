@@ -154,6 +154,12 @@ sysinfo.txt
 
 # End of https://www.toptal.com/developers/gitignore/api/rider,unity
 
+/[Pp]ackages/Len's Island
+/[Pp]ackages/BepInExPack
+/ThunderKit
+/[Aa]ssets/ThunderKitSettings/Logs
+/[Aa]ssets/ThunderKitSettings/Logs.meta
+
 AssetBundles
 Assets/ExternalAssemblies/Game/*.dll
 Assets/ExternalAssemblies/Game/*.meta
