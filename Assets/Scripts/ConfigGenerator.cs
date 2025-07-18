@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using BepInEx;
 using BepInEx.Configuration;
 using IslandConfig.UI;
@@ -12,18 +13,22 @@ namespace IslandConfig
         {
             foreach (var pair in config)
             {
-                var wrapped = WrapEntry(pair.Value);
+                var wrapped = WrapEntry(pluginInfo.Metadata, pair.Value);
+                if (wrapped == null) continue;
                 wrapped.Owner = pluginInfo;
                 yield return wrapped;
             }
         }
 
-        private static BepInConfigWrapper WrapEntry(ConfigEntryBase configEntry)
+        private static BepInConfigWrapper WrapEntry(BepInPlugin pluginMeta, ConfigEntryBase configEntry)
         {
             var type = configEntry.SettingType;
 
             return type switch
             {
+                // TODO: Implement keyboard shortcut binding.
+                not null when type.IsEquivalentTo(typeof(KeyboardShortcut)) => null,
+                not null when type.IsEquivalentTo(typeof(UnityEngine.Rect)) => null,
                 not null when type.IsEquivalentTo(typeof(bool)) => new CheckboxConfigItem(configEntry as ConfigEntry<bool>),
                 not null when type.IsEquivalentTo(typeof(string)) && !HasListConstraint(configEntry) => new TextConfigItem(configEntry as ConfigEntry<string>),
                 
@@ -51,7 +56,7 @@ namespace IslandConfig
                 
                 not null when type.IsEnum == false && HasListConstraint(configEntry) => CreateGenericDropdown(configEntry),
                 not null when type.IsEnum => CreateEnumConfigItem(configEntry),
-                _ => throw new NotImplementedException($"{type!.Name} not supported yet")
+                _ => throw new UnsupportedBindingException(pluginMeta, configEntry)
             };
         }
 
@@ -70,13 +75,30 @@ namespace IslandConfig
         private static BepInConfigWrapper CreateGenericDropdown(ConfigEntryBase configEntry)
         {
             var generified = typeof(DropdownConfigItem<>).MakeGenericType(configEntry.SettingType);
-            return (BepInConfigWrapper)Activator.CreateInstance(generified);
+            return (BepInConfigWrapper)Activator.CreateInstance(generified, configEntry);
         }
         
         private static BepInConfigWrapper CreateEnumConfigItem(ConfigEntryBase configEntry)
         {
             var generified = typeof(EnumDropdownConfigItem<>).MakeGenericType(configEntry.SettingType);
-            return (BepInConfigWrapper)Activator.CreateInstance(generified);
+            return (BepInConfigWrapper)Activator.CreateInstance(generified, configEntry);
+        }
+
+        private class UnsupportedBindingException : NotImplementedException
+        {
+            public UnsupportedBindingException(BepInPlugin pluginMeta, ConfigEntryBase configEntry) : base(BuildMessage(pluginMeta, configEntry))
+            {
+            }
+
+            private static string BuildMessage(BepInPlugin pluginMeta, ConfigEntryBase entry)
+            {
+                var builder = new StringBuilder("Setting type is not supported yet.");
+                builder.AppendLine();
+                builder.AppendLine($"Plugin: {pluginMeta.Name} ({pluginMeta.GUID}");
+                builder.AppendLine($"Config path: {entry.Definition.Section}/{entry.Definition.Key}");
+                builder.AppendLine($"Config type: {entry.SettingType.FullName}");
+                return builder.ToString();
+            }
         }
     }
 }

@@ -67,7 +67,12 @@ MonoBehaviour:
   assetBundles:
   - assetBundleName: islandconfigui
     assets:
-    - {fileID: 102900000, guid: ce76ce8adb44c53428634282fb3ed564, type: 3}
+    - {fileID: 2537780774353506889, guid: 0f56f15ee2c9bca4883cccd13b15e41a, type: 3}
+    - {fileID: 4458768564296830151, guid: ac6d8fc924564b44fac3c3a40f108929, type: 3}
+    - {fileID: 7949492505788389661, guid: fe3413f99a2072a4d97c412e96248b81, type: 3}
+    - {fileID: 7949492505788389661, guid: bdce4f5b2cfe58740a6c87a79589bb60, type: 3}
+    - {fileID: 7949492505788389661, guid: f08ab3f6ee7877c4db7968a8245f6731, type: 3}
+    - {fileID: 7949492505788389661, guid: d5d0096bb18bdda4a8863586192bae9a, type: 3}
 --- !u!114 &5903869391274259749
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86,5 +91,4 @@ MonoBehaviour:
   Name: IslandConfig
   Description: Mod configuration UI for Len's Island
   Version: 0.1.0
-  Dependencies:
-  - {fileID: 11400000, guid: 08252974f3d547b3ecc87b18a8e60e97, type: 2}
+  Dependencies: []

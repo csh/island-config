@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Collections;
-using System.IO;
-using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using IslandConfig.Patches;
 using UnityEngine;
+
+#if !UNITY_EDITOR
+using IslandConfig.Patches;
+using System.IO;
+using System.Reflection;
+#endif
 
 namespace IslandConfig
 {
@@ -26,7 +28,7 @@ namespace IslandConfig
         static IslandConfigPlugin()
         {
             Logger = BepInEx.Logging.Logger.CreateLogSource("IslandConfigEditor");
-            Logger.LogEvent += (sender, args) =>
+            Logger.LogEvent += (_, args) =>
             {
                 switch (args.Level)
                 {
@@ -64,7 +66,10 @@ namespace IslandConfig
             
             Instance = this;
             Logger = base.Logger;
+            _harmony = new Harmony(IslandConfigPluginInfo.Guid);
 
+            PluginConfig.Init(Config);
+#if !UNITY_EDITOR
             var assemblyFolder = Assembly.GetExecutingAssembly().Location;
             var bundlePath = Path.Combine(Path.GetDirectoryName(assemblyFolder)!, "islandconfigui");
             var bundle = AssetBundle.LoadFromFile(bundlePath);
@@ -74,14 +79,9 @@ namespace IslandConfig
                 Logger.LogError("Failed to load UI AssetBundle!");
                 return;
             }
-            
-#if !UNITY_EDITOR
             IslandConfigAssets.Init(bundle);
-#endif
-            PluginConfig.Init(Config);
-            
-            _harmony = new Harmony(IslandConfigPluginInfo.Guid);
             _harmony.PatchAll(typeof(MainMenuPatches));
+#endif
             
             Logger.LogInfo($"Loaded {IslandConfigPluginInfo.Name}");
             

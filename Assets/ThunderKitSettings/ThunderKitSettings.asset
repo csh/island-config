@@ -14,21 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FirstLoad: 0
   ShowOnStartup: 1
-  GameExecutable: Len's Island.exe
-  GamePath: C:\Program Files (x86)\Steam\steamapps\common\Len's Island
-  Is64Bit: 1
+  GameExecutable: 
+  GamePath: 
+  Is64Bit: 0
   DateTimeFormat: HH:mm:ss:fff
   CreatedDateFormat: MMM/dd HH:mm:ss
   ShowLogWindow: 1
   LogPackageSourceTimings: 0
   ImageCachePath: Library/MarkdownImageCache
-  CachedImageCount: 3
-  CacheSize: 0.09
+  CachedImageCount: 12
+  CacheSize: 0.61
   MarkdownOpenMode: 1
   SelectedPipeline: {fileID: 11400000, guid: 5aa90d9f2a80d3f4fbb2b8df5490fe6c, type: 2}
   SelectedManifest: {fileID: 11400000, guid: 3e8b6134aaa08dd4ea7e49a505e8f57a, type: 2}
   QuickAccessPipelines:
+  - {fileID: 11400000, guid: f6ecc4c1c976107419096abbf8b895e7, type: 2}
   - {fileID: 11400000, guid: 5aa90d9f2a80d3f4fbb2b8df5490fe6c, type: 2}
   QuickAccessManifests:
   - {fileID: 11400000, guid: 3e8b6134aaa08dd4ea7e49a505e8f57a, type: 2}
-  ImportConfiguration: {fileID: 11400000, guid: ad006fa997b92c34e832ce330f0cb3a2, type: 2}
+  ImportConfiguration: {fileID: 0}

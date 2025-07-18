@@ -19,6 +19,7 @@ namespace IslandConfig
 
         internal static void Init(AssetBundle bundle)
         {
+            IslandConfigPlugin.Logger.LogInfo("Loading runtime AssetBundle");
             if (_bundle is not null)
             {
                 throw new InvalidOperationException("IslandConfig AssetBundle has already been set!");

@@ -233,7 +233,22 @@ namespace IslandConfig.Controllers
                 wrapperInterfaceElement.ForceUpdateElement();
             }
         }
-
+        
+        private bool IsTextInputFocused()
+        {
+            // TextMeshPro-based check
+            var selected = UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject;
+            return selected is not null && selected.GetComponent<InputField>() is not null;
+        }
+        
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape) && !IsTextInputFocused())
+            {
+                gameObject.SetActive(false);
+            }
+        }
+        
         private int _dirtyPollCounter;
         
         private void LateUpdate()

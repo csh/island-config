@@ -1,11 +1,5 @@
 {
   "dependencies": {
-    "com.bbepis.bepinex": {
-      "version": "file:BepInExPack",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
     "com.passivepicasso.thunderkit": {
       "version": "https://github.com/PassivePicasso/ThunderKit.git#8.0.3",
       "depth": 0,
@@ -14,13 +8,6 @@
         "com.unity.scriptablebuildpipeline": "1.16.1"
       },
       "hash": "4e3d3c17593fe72bffe9d8c6d32bb53be948c31e"
-    },
-    "com.unity.collab-proxy": {
-      "version": "2.5.2",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
     },
     "com.unity.editorcoroutines": {
       "version": "1.0.0",

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Active: 1
   stageDebugDatabases: 1
-  releaseBuild: 1
+  releaseBuild: 0
   assemblyArtifactPath: <AssemblyStaging>
   buildTarget: 5
 --- !u!114 &-7032517285178127474
@@ -32,22 +32,9 @@ MonoBehaviour:
   Active: 1
   AssetBundleBuildOptions: 1
   buildTarget: 5
-  recurseDirectories: 1
+  recurseDirectories: 0
   simulate: 0
   BundleArtifactPath: <AssetBundleStaging>
---- !u!114 &-892410951231539771
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3570c76eb7a5c3c45942d9295a150917, type: 3}
-  m_Name: StageManifestFiles
-  m_EditorClassIdentifier: 
-  Active: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63,6 +50,5 @@ MonoBehaviour:
   Data:
   - {fileID: -7032517285178127474}
   - {fileID: -9062231981873701305}
-  - {fileID: -892410951231539771}
   QuickAccess: 1
   manifest: {fileID: 11400000, guid: 3e8b6134aaa08dd4ea7e49a505e8f57a, type: 2}

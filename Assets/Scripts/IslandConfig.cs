@@ -7,7 +7,6 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using IslandConfig.UI;
-using UnityEngine;
 
 namespace IslandConfig
 {
