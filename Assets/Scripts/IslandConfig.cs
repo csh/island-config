@@ -14,8 +14,12 @@ namespace IslandConfig
     {
         internal static readonly ConditionalWeakTable<PluginInfo, List<BepInConfigWrapper>> ConfigsByPlugin = new();
 
+#if UNITY_EDITOR
+        private static bool _generatedConfigs = true;
+#else
         private static bool _generatedConfigs;
-
+#endif
+        
         internal static void GenerateConfigs()
         {
             if (_generatedConfigs) return;

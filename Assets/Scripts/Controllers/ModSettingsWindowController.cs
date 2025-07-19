@@ -9,7 +9,6 @@ using IslandConfig.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 #if !UNITY_EDITOR
 using BepInEx.Bootstrap;
@@ -214,8 +213,11 @@ namespace IslandConfig.Controllers
 
         private void OnEnable()
         {
-            searchInput?.onValueChanged.AddListener(OnSearchInputUpdated);
-
+            if (PluginConfig.AutoGenerateUI is not null && PluginConfig.AutoGenerateUI.Value)
+            {
+                IslandConfig.GenerateConfigs();
+            }
+            
             // ReSharper disable once JoinDeclarationAndInitializer
             IEnumerable<(string modGuid, string modName)> modList;
 #if UNITY_EDITOR
@@ -223,11 +225,6 @@ namespace IslandConfig.Controllers
             EditorPopulatePrefabs();
             EditorPopulateSettingsPanel();
 #else
-            if (PluginConfig.AutoGenerateUI.Value)
-            {
-                IslandConfig.GenerateConfigs();
-            }
-
             modList = Chainloader.PluginInfos.Values.Where(pi =>
                     IslandConfig.ConfigsByPlugin.TryGetValue(pi, out var wrappers) && wrappers.Count > 0)
                 .Select(pi => (pi.Metadata.GUID, pi.Metadata.Name));
@@ -235,13 +232,14 @@ namespace IslandConfig.Controllers
             
             _allMods = modList.OrderBy(tuple => tuple.modName, StringComparer.OrdinalIgnoreCase).ToList();
             
-            IslandConfigPlugin.Logger.LogInfo($"Loaded {_allMods.Count} mods");
+            IslandConfigPlugin.Logger.LogDebug($"Loaded {_allMods.Count} mods");
             PopulateModList(_allMods);
 
             OnModSelected(IslandConfigPluginInfo.Guid);
 
             saveButton?.onClick.AddListener(SavePendingChanges);
             revertButton?.onClick.AddListener(RevertPendingChanges);
+            searchInput?.onValueChanged.AddListener(OnSearchInputUpdated);
         }
 
         private void Update()
@@ -272,11 +270,12 @@ namespace IslandConfig.Controllers
             if (++_dirtyPollCounter < 30) return;
             _dirtyPollCounter = 0;
             
-#if UNITY_EDITOR
-            var isAnyDirty = DebugModSettings.Any(kvp => kvp.Value.Any(wrapped => wrapped.IsDirty));
-#else
             var isAnyDirty = IslandConfig.ConfigsByPlugin.Any(kvp => kvp.Value.Any(wrapped => wrapped.IsDirty));
+
+#if UNITY_EDITOR
+            isAnyDirty |= DebugModSettings.Any(kvp => kvp.Value.Any(wrapped => wrapped.IsDirty));
 #endif
+
             revertButton.interactable = isAnyDirty;
             saveButton.interactable = isAnyDirty;
         }
@@ -344,25 +343,22 @@ namespace IslandConfig.Controllers
 #endif
             }
 
+            var wrappers = IslandConfig.ConfigsByPlugin.Where(pair => string.Equals(pair.Key.Metadata.GUID, guid)).Select(pair => pair.Value).FirstOrDefault();
+            
 #if UNITY_EDITOR
-            if (!DebugModSettings.TryGetValue(guid, out var wrappers))
+            if (wrappers is null && !DebugModSettings.TryGetValue(guid, out wrappers))
             {
                 IslandConfigPlugin.Logger.LogWarning($"Could not find config wrappers for {guid}");
                 return;
             }
-#else
-            if (!Chainloader.PluginInfos.TryGetValue(guid, out var info))
-            {
-                IslandConfigPlugin.Logger.LogWarning($"[IslandConfig] Could not find PluginInfo for {guid}");
-                return;
-            }
-
-            if (!IslandConfig.ConfigsByPlugin.TryGetValue(info, out var wrappers))
-            {
-                IslandConfigPlugin.Logger.LogWarning($"[IslandConfig] Could not find config wrappers for {guid}");
-                return;
-            }
 #endif
+            
+            // ReSharper disable once DuplicatedSequentialIfBodies
+            if (wrappers is null)
+            {
+                IslandConfigPlugin.Logger.LogWarning($"Could not find config wrappers for {guid}");
+                return;
+            }
 
             var grouped = wrappers.GroupBy(wrapper => wrapper.Section).OrderBy(wrapper => wrapper.Key);
 

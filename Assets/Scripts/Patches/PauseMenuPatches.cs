@@ -29,7 +29,6 @@ namespace IslandConfig.Patches
 
             if (buttons.Any(button => string.Equals(button.name, modSettingsButtonName)))
             {
-                IslandConfigPlugin.Logger.LogInfo("Mod settings button is already injected");
                 yield break;
             }
 
@@ -41,7 +40,7 @@ namespace IslandConfig.Patches
                 yield break;
             }
 
-            IslandConfigPlugin.Logger.LogInfo($"Injecting mod settings button into pause menu, using \"{settingsButton.name}\" as template");
+            IslandConfigPlugin.Logger.LogDebug($"Injecting mod settings button into pause menu, using \"{settingsButton.name}\" as template");
             
             var buttonList = settingsButton.transform.parent;
             var modSettingsButton = Object.Instantiate(settingsButton.gameObject, buttonList);
@@ -82,8 +81,6 @@ namespace IslandConfig.Patches
             
             modSettingsButton.GetComponent<Button>().onClick.AddListener(() =>
             {
-                IslandConfigPlugin.Logger.LogInfo("Mod Settings button clicked!");
-                
                 var existing = GameObject.Find("ModSettingsPanel(Clone)");
                 if (existing is not null)
                 {

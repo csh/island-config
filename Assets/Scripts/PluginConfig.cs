@@ -8,11 +8,15 @@ namespace IslandConfig
 
         public static void Init(ConfigFile config)
         {
+            IslandConfigPlugin.Logger.LogDebug("Setting up configuration bindings.");
+            
             AutoGenerateUI = config.Bind("IslandConfig", "AutoUI", true);
         }
 
         internal static void InitUserInterface()
         {
+            IslandConfigPlugin.Logger.LogDebug("Registering configuration UI.");
+            
             IslandConfig.Register(builder =>
             {
                 builder.WithCheckbox(

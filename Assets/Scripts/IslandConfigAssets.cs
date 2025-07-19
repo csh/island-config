@@ -1,10 +1,10 @@
 ﻿#if UNITY_EDITOR
 using IslandConfig.Controllers;
 using IslandConfig.Controllers.UI;
-#else
+#endif
+
 using System;
 using UnityEngine;
-#endif
 
 namespace IslandConfig
 {
@@ -16,12 +16,12 @@ namespace IslandConfig
         public static SectionControllerScript EditorSectionPrefab;
         public static SliderControllerScript EditorSliderPrefab;
         public static TextControllerScript EditorTextPrefab;
-#else
+#endif
+        
         private static AssetBundle _bundle;
 
         internal static void Init(AssetBundle bundle)
         {
-            IslandConfigPlugin.Logger.LogInfo("Loading runtime AssetBundle");
             if (_bundle is not null)
             {
                 throw new InvalidOperationException("IslandConfig AssetBundle has already been set!");
@@ -35,6 +35,5 @@ namespace IslandConfig
         internal static GameObject CheckboxPrefab => _bundle.LoadAsset<GameObject>("Toggle Config Item");
         internal static GameObject SliderPrefab => _bundle.LoadAsset<GameObject>("Slider Config Item");
         internal static GameObject TextPrefab => _bundle.LoadAsset<GameObject>("Text Config Item");
-#endif
     }
 }

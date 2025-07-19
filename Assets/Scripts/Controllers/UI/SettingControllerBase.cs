@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 namespace IslandConfig.Controllers.UI
 {
     [DisallowMultipleComponent]
-    internal abstract class SettingsControllerBase : MonoBehaviour
+    public abstract class SettingsControllerBase : MonoBehaviour
     {
         [Header("UI References")]
         [SerializeField] protected TextMeshProUGUI label;
@@ -17,7 +17,7 @@ namespace IslandConfig.Controllers.UI
         internal abstract void ForceUpdateElement();
     }
     
-    internal abstract class SettingControllerBase<T> : SettingsControllerBase, IPointerEnterHandler where T: IGenericConfigurable
+    public abstract class SettingControllerBase<T> : SettingsControllerBase, IPointerEnterHandler where T: IGenericConfigurable
     {
         protected T Definition;
 

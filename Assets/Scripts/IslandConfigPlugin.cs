@@ -3,12 +3,9 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
-
-#if !UNITY_EDITOR
 using IslandConfig.Patches;
 using System.IO;
 using System.Reflection;
-#endif
 
 namespace IslandConfig
 {
@@ -53,23 +50,16 @@ namespace IslandConfig
         }
 #endif
         
-        internal static IslandConfigPlugin Instance { get; private set; }
         
         private Harmony _harmony;
         
         private void Awake()
         {
-            if (Instance != null)
-            {
-                throw new InvalidOperationException("IslandConfigPlugin is already initialized");
-            }
-            
-            Instance = this;
             Logger = base.Logger;
-            _harmony = new Harmony(IslandConfigPluginInfo.Guid);
-
+            
+            Logger.LogInfo($"{IslandConfigPluginInfo.Name} is initializing.");
             PluginConfig.Init(Config);
-#if !UNITY_EDITOR
+
             var assemblyFolder = Assembly.GetExecutingAssembly().Location;
             var bundlePath = Path.Combine(Path.GetDirectoryName(assemblyFolder)!, "islandconfigui");
             var bundle = AssetBundle.LoadFromFile(bundlePath);
@@ -79,12 +69,14 @@ namespace IslandConfig
                 Logger.LogError("Failed to load UI AssetBundle!");
                 return;
             }
+            
+            Logger.LogInfo("Loading UI assets");
             IslandConfigAssets.Init(bundle);
+            
+            _harmony = new Harmony(IslandConfigPluginInfo.Guid);
             _harmony.PatchAll(typeof(PauseMenuPatches));
             _harmony.PatchAll(typeof(MainMenuPatches));
-#endif
             
-            Logger.LogInfo($"Loaded {IslandConfigPluginInfo.Name}");
             
             var count = 0;
             foreach (var patchedMethod in _harmony.GetPatchedMethods())
@@ -93,6 +85,7 @@ namespace IslandConfig
                 count++;
             }
             Logger.LogInfo($"Applied {count} patches.");
+            Logger.LogInfo($"{IslandConfigPluginInfo.Name} initialized.");
         }
 
         private void Start()

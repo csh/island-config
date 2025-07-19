@@ -58,7 +58,7 @@ namespace IslandConfig.Patches
                 yield break;
             }
             
-            IslandConfigPlugin.Logger.LogInfo($"Injecting settings button, cloning {settingsButton.name} as a template");
+            IslandConfigPlugin.Logger.LogDebug($"Injecting settings button, cloning {settingsButton.name} as a template");
 
             var buttonList = settingsButton.transform.parent;
             var modSettingsButton = Object.Instantiate(settingsButton.gameObject, buttonList);
@@ -157,8 +157,6 @@ namespace IslandConfig.Patches
             modSettingsButton.GetComponent<Button>().onClick = new Button.ButtonClickedEvent();
             modSettingsButton.GetComponent<Button>().onClick.AddListener(() =>
             {
-                IslandConfigPlugin.Logger.LogInfo("Mod Settings button clicked!");
-                
                 var existing = GameObject.Find("ModSettingsPanel(Clone)");
                 if (existing is not null)
                 {
