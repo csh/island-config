@@ -9,6 +9,7 @@ using IslandConfig.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 #if !UNITY_EDITOR
 using BepInEx.Bootstrap;
@@ -54,6 +55,7 @@ namespace IslandConfig.Controllers
         {
             IslandConfigAssets.EditorDropdownPrefab = dropdownControllerPrefab;
             IslandConfigAssets.EditorCheckboxPrefab = checkboxControllerPrefab;
+            IslandConfigAssets.EditorSectionPrefab = sectionControllerPrefab;
             IslandConfigAssets.EditorSliderPrefab = sliderControllerPrefab;
             IslandConfigAssets.EditorTextPrefab = textControllerPrefab;
             IslandConfigPlugin.Logger.LogDebug("Prefab list populated");
@@ -71,6 +73,7 @@ namespace IslandConfig.Controllers
 
         [SerializeField] private DropdownControllerScript dropdownControllerPrefab;
         [SerializeField] private CheckboxControllerScript checkboxControllerPrefab;
+        [SerializeField] private SectionControllerScript sectionControllerPrefab;
         [SerializeField] private SliderControllerScript sliderControllerPrefab;
         [SerializeField] private TextControllerScript textControllerPrefab;
 
@@ -196,10 +199,9 @@ namespace IslandConfig.Controllers
                 wrapper.Cancel();
             }
 
-            for (var i = settingsList.childCount - 1; i >= 0; i--)
+            foreach (var child in settingsList.GetComponentsInChildren<SettingsControllerBase>())
             {
-                var wrapperInterfaceElement = settingsList.GetChild(i).GetComponent<SettingsControllerBase>();
-                wrapperInterfaceElement.ForceUpdateElement();
+                child.ForceUpdateElement();
             }
         }
 
@@ -366,10 +368,18 @@ namespace IslandConfig.Controllers
 
             foreach (var group in grouped)
             {
+#if UNITY_EDITOR
+                var configSection = Instantiate(IslandConfigAssets.EditorSectionPrefab, settingsList);
+                configSection.Initialize(group.Key);
+#else
+                var configSection = Instantiate(IslandConfigAssets.SectionContainerPrefab, settingsList);
+                configSection.GetComponent<SectionControllerScript>().Initialize(group.Key);
+#endif
+                
                 foreach (var wrapper in group)
                 {
                     var configItem = wrapper.CreatePrefab(hoverTextName, hoverTextDescription);
-                    configItem.transform.SetParent(settingsList, false);
+                    configItem.transform.SetParent(configSection.transform, false);
                 }
             }
         }

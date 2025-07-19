@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using IslandConfig.Controllers;
 using IslandConfig.Controllers.UI;
 #else
 using System;
@@ -12,6 +13,7 @@ namespace IslandConfig
 #if UNITY_EDITOR
         public static DropdownControllerScript EditorDropdownPrefab;
         public static CheckboxControllerScript EditorCheckboxPrefab;
+        public static SectionControllerScript EditorSectionPrefab;
         public static SliderControllerScript EditorSliderPrefab;
         public static TextControllerScript EditorTextPrefab;
 #else
@@ -28,6 +30,7 @@ namespace IslandConfig
         }
 
         internal static GameObject SettingsWindowPrefab => _bundle.LoadAsset<GameObject>("Mod Settings Window");
+        internal static GameObject SectionContainerPrefab => _bundle.LoadAsset<GameObject>("Section Container");
         internal static GameObject DropdownPrefab => _bundle.LoadAsset<GameObject>("Dropdown Config Item");
         internal static GameObject CheckboxPrefab => _bundle.LoadAsset<GameObject>("Toggle Config Item");
         internal static GameObject SliderPrefab => _bundle.LoadAsset<GameObject>("Slider Config Item");

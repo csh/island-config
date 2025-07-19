@@ -59,7 +59,7 @@ namespace IslandConfig.Patches
 
             var buttonListRt = (RectTransform)buttonList;
             var buttonListSize = buttonListRt.sizeDelta;
-            buttonListSize.y += 40;
+            buttonListSize.y += 35;
             buttonListRt.sizeDelta = buttonListSize;
             
             IslandConfigPlugin.Logger.LogDebug("Adjusting pause menu height");
