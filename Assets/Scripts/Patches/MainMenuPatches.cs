@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using HarmonyLib;
+using IslandConfig.Controllers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,21 +11,8 @@ using Object = UnityEngine.Object;
 
 namespace IslandConfig.Patches
 {
-    internal static class MainMenuPatches
+    internal static partial class MainMenuPatches
     {
-        public class HierarchyDumper : MonoBehaviour
-        {
-            [ContextMenu("Dump Hierarchy")]
-            public void Dump() => DumpRecursive(this.transform, 0);
-
-            private void DumpRecursive(Transform t, int depth)
-            {
-                IslandConfigPlugin.Logger.LogError($"{new string(' ', depth * 2)}{t.name}");
-                foreach (Transform child in t)
-                    DumpRecursive(child, depth + 1);
-            }
-        }
-        
         public static Transform FindDeepChildByName(this Transform parent, string name)
         {
             foreach (Transform child in parent)
@@ -38,42 +26,7 @@ namespace IslandConfig.Patches
             }
             return null;
         }
-        
-        public class ComponentDumper : MonoBehaviour
-        {
-            public bool includeChildren = true;
 
-            private void Awake()
-            {
-                if (includeChildren)
-                {
-                    foreach (Transform child in GetComponentsInChildren<Transform>(true))
-                    {
-                        DumpForObject(child.gameObject);
-                    }
-                }
-                else
-                {
-                    DumpForObject(gameObject);
-                }
-            }
-
-            private void DumpForObject(GameObject obj)
-            {
-                IslandConfigPlugin.Logger.LogInfo($"[{obj.name}] has the following components:");
-                foreach (var component in obj.GetComponents<Component>())
-                {
-                    if (component == null)
-                    {
-                        IslandConfigPlugin.Logger.LogWarning($" - Missing/NULL component on {obj.name}");
-                        continue;
-                    }
-
-                    IslandConfigPlugin.Logger.LogInfo($" - {component.GetType().FullName}");
-                }
-            }
-        }
-        
         [HarmonyPostfix, HarmonyPatch(typeof(MainMenu), nameof(MainMenu.EnableMainMenuGroup))]
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         internal static void InjectMenuButton(MainMenu __instance)
@@ -86,11 +39,13 @@ namespace IslandConfig.Patches
          */
         private static IEnumerator TryInjectButon(MainMenu menu)
         {
+            const string modSettingsButtonName = "Mod Settings Button";
+            
             yield return null;
 
             var buttons = menu.GetComponentsInChildren<Button>();
 
-            if (buttons.Any(b => b.name.Equals("Mod Settings Button")))
+            if (buttons.Any(b => b.name.Equals(modSettingsButtonName)))
             {
                 yield break;
             }
@@ -103,13 +58,12 @@ namespace IslandConfig.Patches
                 yield break;
             }
             
-            settingsButton.transform.parent.gameObject.AddComponent<ComponentDumper>();
-            
             IslandConfigPlugin.Logger.LogInfo($"Injecting settings button, cloning {settingsButton.name} as a template");
 
-            var modSettingsButton = UnityEngine.Object.Instantiate(settingsButton.gameObject, settingsButton.transform.parent);
+            var buttonList = settingsButton.transform.parent;
+            var modSettingsButton = Object.Instantiate(settingsButton.gameObject, buttonList);
             
-            modSettingsButton.name = "Mod Settings Button";
+            modSettingsButton.name = modSettingsButtonName;
 
             var originalRt = settingsButton.GetComponent<RectTransform>();
             var rt = modSettingsButton.GetComponent<RectTransform>();
@@ -197,7 +151,7 @@ namespace IslandConfig.Patches
             }
             
             var tmp = modSettingsButton.GetComponentInChildren<TextMeshProUGUI>();
-            if (tmp != null)
+            if (tmp is not null)
                 tmp.text = "Mod Settings";
 
             modSettingsButton.GetComponent<Button>().onClick = new Button.ButtonClickedEvent();
@@ -206,9 +160,9 @@ namespace IslandConfig.Patches
                 IslandConfigPlugin.Logger.LogInfo("Mod Settings button clicked!");
                 
                 var existing = GameObject.Find("ModSettingsPanel(Clone)");
-                if (existing != null)
+                if (existing is not null)
                 {
-                    existing.SetActive(!existing.activeSelf); // toggle
+                    existing.SetActive(!existing.activeSelf);
                 }
                 else
                 {
@@ -218,13 +172,26 @@ namespace IslandConfig.Patches
                     var prefab = IslandConfigAssets.SettingsWindowPrefab;
 #endif
                     // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                    if (prefab == null) return;
-                    
-                    var parent = GameObject.Find("Main Camera New");
-                    var canvas = parent.transform.Find("Canvas")?.gameObject;
-                    var instance = Object.Instantiate(prefab, canvas.transform, false);
-                    instance.name = "ModSettingsPanel(Clone)";
+                    if (!prefab) return;
+
+                    var canvas = buttonList.GetComponentInParent<Canvas>();
+                    if (canvas is null)
+                    {
+                        IslandConfigPlugin.Logger.LogError("Failed to inject mod settings menu");
+                        return;
+                    }
+                    existing = Object.Instantiate(prefab, canvas.transform, false);
+                    existing.name = "ModSettingsPanel(Clone)";
                 }
+                
+                if (!existing.TryGetComponent<ModSettingsWindowController>(out var modSettingsWindow))
+                {
+                    IslandConfigPlugin.Logger.LogError($"Failed to get {nameof(ModSettingsWindowController)}");
+                    return;
+                }
+                
+                menu.DisableMainMenuGroup(true);
+                modSettingsWindow.CloseHandler = menu.EnableMainMenuGroup;
             });
         }
     }

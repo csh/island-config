@@ -80,6 +80,7 @@ namespace IslandConfig
                 return;
             }
             IslandConfigAssets.Init(bundle);
+            _harmony.PatchAll(typeof(PauseMenuPatches));
             _harmony.PatchAll(typeof(MainMenuPatches));
 #endif
             

@@ -22,8 +22,8 @@ MonoBehaviour:
   ShowLogWindow: 1
   LogPackageSourceTimings: 0
   ImageCachePath: Library/MarkdownImageCache
-  CachedImageCount: 12
-  CacheSize: 0.61
+  CachedImageCount: 0
+  CacheSize: 0
   MarkdownOpenMode: 1
   SelectedPipeline: {fileID: 11400000, guid: 5aa90d9f2a80d3f4fbb2b8df5490fe6c, type: 2}
   SelectedManifest: {fileID: 11400000, guid: 3e8b6134aaa08dd4ea7e49a505e8f57a, type: 2}

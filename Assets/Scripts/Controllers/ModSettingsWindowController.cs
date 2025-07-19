@@ -30,6 +30,7 @@ namespace IslandConfig.Controllers
         [SerializeField] private Button saveButton;
 
         private List<(string modGuid, string modName)> _allMods;
+        internal Action CloseHandler;
 
 #if UNITY_EDITOR
         private enum TestEnum
@@ -170,6 +171,45 @@ namespace IslandConfig.Controllers
         }
 #endif
 
+        private static void SavePendingChanges()
+        {
+#if UNITY_EDITOR
+            var dirtyWrappers = DebugModSettings.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
+#else
+            var dirtyWrappers = IslandConfig.ConfigsByPlugin.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
+#endif
+            foreach (var wrapper in dirtyWrappers)
+            {
+                wrapper.Commit();
+            }
+        }
+
+        private void RevertPendingChanges()
+        {
+#if UNITY_EDITOR
+            var dirtyWrappers = DebugModSettings.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
+#else
+            var dirtyWrappers = IslandConfig.ConfigsByPlugin.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
+#endif
+            foreach (var wrapper in dirtyWrappers)
+            {
+                wrapper.Cancel();
+            }
+
+            for (var i = settingsList.childCount - 1; i >= 0; i--)
+            {
+                var wrapperInterfaceElement = settingsList.GetChild(i).GetComponent<SettingsControllerBase>();
+                wrapperInterfaceElement.ForceUpdateElement();
+            }
+        }
+
+        private bool IsTextInputFocused()
+        {
+            // TextMeshPro-based check
+            var selected = UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject;
+            return selected is not null && selected.GetComponent<InputField>() is not null;
+        }
+
         private void OnEnable()
         {
             searchInput?.onValueChanged.AddListener(OnSearchInputUpdated);
@@ -202,55 +242,24 @@ namespace IslandConfig.Controllers
             revertButton?.onClick.AddListener(RevertPendingChanges);
         }
 
-        private static void SavePendingChanges()
-        {
-#if UNITY_EDITOR
-            var dirtyWrappers = DebugModSettings.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
-#else
-            var dirtyWrappers = IslandConfig.ConfigsByPlugin.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
-#endif
-            foreach (var wrapper in dirtyWrappers)
-            {
-                wrapper.Commit();
-            }
-        }
-
-        private void RevertPendingChanges()
-        {
-#if UNITY_EDITOR
-            var dirtyWrappers = DebugModSettings.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
-#else
-            var dirtyWrappers = IslandConfig.ConfigsByPlugin.SelectMany(kvp => kvp.Value).Where(wrapper => wrapper.IsDirty);
-#endif
-            foreach (var wrapper in dirtyWrappers)
-            {
-                wrapper.Cancel();
-            }
-
-            for (var i = settingsList.childCount - 1; i >= 0; i--)
-            {
-                var wrapperInterfaceElement = settingsList.GetChild(i).GetComponent<SettingsControllerBase>();
-                wrapperInterfaceElement.ForceUpdateElement();
-            }
-        }
-        
-        private bool IsTextInputFocused()
-        {
-            // TextMeshPro-based check
-            var selected = UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject;
-            return selected is not null && selected.GetComponent<InputField>() is not null;
-        }
-        
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape) && !IsTextInputFocused())
-            {
-                gameObject.SetActive(false);
-            }
+            if (!Input.GetKeyDown(KeyCode.Escape) || IsTextInputFocused()) return;
+            
+            gameObject.SetActive(false);
+            CloseHandler?.Invoke();
         }
-        
+
+        private void OnDisable()
+        {
+            searchInput?.onValueChanged.RemoveListener(OnSearchInputUpdated);
+            revertButton?.onClick.RemoveListener(RevertPendingChanges);
+            saveButton?.onClick.RemoveListener(SavePendingChanges);
+            ClearModList();
+        }
+
         private int _dirtyPollCounter;
-        
+
         private void LateUpdate()
         {
             /*
@@ -268,14 +277,6 @@ namespace IslandConfig.Controllers
 #endif
             revertButton.interactable = isAnyDirty;
             saveButton.interactable = isAnyDirty;
-        }
-
-        private void OnDisable()
-        {
-            searchInput?.onValueChanged.RemoveListener(OnSearchInputUpdated);
-            revertButton?.onClick.RemoveListener(RevertPendingChanges);
-            saveButton?.onClick.RemoveListener(SavePendingChanges);
-            ClearModList();
         }
 
         private void ClearModList()
