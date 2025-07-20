@@ -20,7 +20,6 @@ namespace IslandConfig.UI
             var prefab = Object.Instantiate(IslandConfigAssets.CheckboxPrefab);
 #endif
             var controller = prefab.GetComponent<CheckboxControllerScript>();
-            controller.Initialize(this, hoverNameTarget, hoverDescTarget);
             return prefab;
         }
     }

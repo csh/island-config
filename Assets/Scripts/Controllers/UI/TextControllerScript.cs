@@ -9,11 +9,10 @@ namespace IslandConfig.Controllers.UI
     {
         [SerializeField] private TMP_InputField textInput;
         private Color _defaultTextColour;
-        
-        internal override void Initialize(ITextInputDefinition definition, TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
+
+        private void Start()
         {
-            base.Initialize(definition, hoverNameTarget, hoverDescTarget);
-            textInput.SetTextWithoutNotify(definition.Value);
+            textInput.SetTextWithoutNotify(Definition.Value);
         }
         
         private void Awake() => _defaultTextColour = textInput.textComponent.color;
@@ -44,7 +43,7 @@ namespace IslandConfig.Controllers.UI
             textInput.SetTextWithoutNotify(Definition.Value);
         }
 
-        internal override void ForceUpdateElement()
+        public override void ForceUpdateElement()
         {
             if (textInput is null || Definition is null) return;
             textInput.SetTextWithoutNotify(Definition.Value);

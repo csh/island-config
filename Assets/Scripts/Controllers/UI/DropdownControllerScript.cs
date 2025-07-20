@@ -9,13 +9,11 @@ namespace IslandConfig.Controllers.UI
     {
         [SerializeField] private TMP_Dropdown dropdown;
         
-        internal override void Initialize(IDropdownDefinition entry, TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
+        private void Start()
         {
-            base.Initialize(entry, hoverNameTarget, hoverDescTarget);
-
             dropdown.ClearOptions();
-            dropdown.AddOptions(entry.Labels);
-            dropdown.SetValueWithoutNotify(entry.SelectedIndex);
+            dropdown.AddOptions(Definition.Labels);
+            dropdown.SetValueWithoutNotify(Definition.SelectedIndex);
         }
 
         private void OnEnable() => dropdown?.onValueChanged.AddListener(OnDropdownChanged);
@@ -33,7 +31,7 @@ namespace IslandConfig.Controllers.UI
             dropdown.SetValueWithoutNotify(Definition.SelectedIndex);
         }
 
-        internal override void ForceUpdateElement()
+        public override void ForceUpdateElement()
         {
             if (dropdown is null || Definition is null) return;
             dropdown.SetValueWithoutNotify(Definition.SelectedIndex);

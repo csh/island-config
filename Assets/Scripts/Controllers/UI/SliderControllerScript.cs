@@ -10,14 +10,12 @@ namespace IslandConfig.Controllers.UI
     {
         [SerializeField] private Slider slider;
 
-        internal override void Initialize(INumericSliderDefinition definition, TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
+        private void Start()
         {
-            base.Initialize(definition, hoverNameTarget, hoverDescTarget);
-            
-            slider.minValue = definition.Min;
-            slider.maxValue = definition.Max;
-            slider.wholeNumbers = definition.IsWholeNumberType;
-            slider.SetValueWithoutNotify(definition.FloatValue);
+            slider.minValue = Definition.Min;
+            slider.maxValue = Definition.Max;
+            slider.wholeNumbers = Definition.IsWholeNumberType;
+            slider.SetValueWithoutNotify(Definition.FloatValue);
         }
         
         private void OnEnable() => slider?.onValueChanged.AddListener(OnSliderChanged);
@@ -35,7 +33,7 @@ namespace IslandConfig.Controllers.UI
             slider.SetValueWithoutNotify(Definition.FloatValue);
         }
 
-        internal override void ForceUpdateElement()
+        public override void ForceUpdateElement()
         {
             if (slider is null || Definition is null) return;
             slider.SetValueWithoutNotify(Definition.FloatValue);

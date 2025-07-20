@@ -16,14 +16,14 @@ namespace IslandConfig.Controllers.UI
         [SerializeField] protected TextMeshProUGUI hoverDesc;
         [SerializeField] protected Button resetButton;
         
-        internal abstract void ForceUpdateElement();
+        public abstract void ForceUpdateElement();
     }
     
     public abstract class SettingControllerBase<T> : SettingsControllerBase, IPointerEnterHandler where T: IGenericConfigurable
     {
         protected T Definition;
 
-        internal virtual void Initialize(T definition, TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
+        public void Initialize(T definition, TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
         {
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
             hoverName = hoverNameTarget;
