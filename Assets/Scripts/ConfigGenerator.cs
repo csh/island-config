@@ -56,8 +56,20 @@ namespace IslandConfig
                 
                 not null when type.IsEnum == false && HasListConstraint(configEntry) => CreateGenericDropdown(configEntry),
                 not null when type.IsEnum => CreateEnumConfigItem(configEntry),
-                _ => throw new UnsupportedBindingException(pluginMeta, configEntry)
+                _ => CreateCustomOrThrow(pluginMeta, configEntry)
             };
+        }
+
+        private static BepInConfigWrapper CreateCustomOrThrow(BepInPlugin pluginMeta, ConfigEntryBase configEntry)
+        {
+            foreach (var (_, typeRegistry) in IslandConfig.CustomConfigElements)
+            {
+                if (typeRegistry.TryGetValue(configEntry.SettingType, out var factory))
+                {
+                    return factory(configEntry);
+                }
+            }
+            throw new UnsupportedBindingException(pluginMeta, configEntry);
         }
 
         private static bool HasListConstraint(ConfigEntryBase configEntry)

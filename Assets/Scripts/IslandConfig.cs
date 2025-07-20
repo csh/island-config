@@ -13,6 +13,7 @@ namespace IslandConfig
     public static class IslandConfig
     {
         internal static readonly ConditionalWeakTable<PluginInfo, List<BepInConfigWrapper>> ConfigsByPlugin = new();
+        internal static readonly ConditionalWeakTable<PluginInfo, Dictionary<Type, Func<ConfigEntryBase, BepInConfigWrapper>>> CustomConfigElements = new();
 
 #if UNITY_EDITOR
         private static bool _generatedConfigs = true;
@@ -72,6 +73,22 @@ namespace IslandConfig
             list.AddRange(builder.Configs.Values);
         }
 
+        public static void RegisterCustomConfigProvider<T, TWrapper>(Func<ConfigEntry<T>, TWrapper> factory) where TWrapper: BepInConfigWrapper<T>
+        {
+            var caller = Assembly.GetCallingAssembly();
+            var pluginInfo =
+                Chainloader.PluginInfos.Values.FirstOrDefault(pluginInfos =>
+                    pluginInfos.Instance.GetType().Assembly == caller);
+            if (pluginInfo is null) return;
+
+            var providerRegistry = CustomConfigElements.GetOrCreateValue(pluginInfo);
+            providerRegistry[typeof(T)] = configEntry =>
+            {
+                var typedEntry = (ConfigEntry<T>)configEntry;
+                return factory(typedEntry);
+            };
+        }
+
         public static void Unregister()
         {
             var caller = Assembly.GetCallingAssembly();
@@ -79,20 +96,57 @@ namespace IslandConfig
                 Chainloader.PluginInfos.Values.FirstOrDefault(pluginInfos =>
                     pluginInfos.Instance.GetType().Assembly == caller);
             if (pluginInfo is null) return;
-            if (!ConfigsByPlugin.TryGetValue(pluginInfo, out var configs)) return;
-            foreach (var wrapper in configs)
+
+            if (CustomConfigElements.Remove(pluginInfo))
             {
-                try
+                IslandConfigPlugin.Logger.LogDebug($"Unregistered custom configuration UI elements provided by {pluginInfo.Metadata.Name}");
+            }
+            
+            // Remove config wrappers owned by this plugin
+            if (ConfigsByPlugin.TryGetValue(pluginInfo, out var configs))
+            {
+                foreach (var wrapper in configs)
                 {
-                    wrapper.Dispose();
+                    try
+                    {
+                        wrapper.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        IslandConfigPlugin.Logger?.LogError("Failed to unregister event handlers for config wrapper");
+                        IslandConfigPlugin.Logger?.LogError(ex);
+                    }
                 }
-                catch (Exception ex)
+                ConfigsByPlugin.Remove(pluginInfo);
+            }
+
+            // Unregister config wrappers provided by the unloading assembly
+            var unloadedWrappers = 0;
+            foreach (var pair in ConfigsByPlugin)
+            {
+                var wrappers = pair.Value;
+                for (var i = wrappers.Count - 1; i >= 0; i--)
                 {
-                    IslandConfigPlugin.Logger?.LogError("Failed to unregister event handlers for config wrapper");
-                    IslandConfigPlugin.Logger?.LogError(ex);
+                    var wrapper = wrappers[i];
+                    if (wrapper.GetType().Assembly != caller) continue;
+                    
+                    try
+                    {
+                        wrapper.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        IslandConfigPlugin.Logger?.LogError($"Failed to unregister event handler for \"{wrapper.GetType().FullName}\" provided by {pluginInfo.Metadata.Name}");
+                        IslandConfigPlugin.Logger?.LogError(ex);
+                    }
+                    finally
+                    {
+                        wrappers.RemoveAt(i);
+                        unloadedWrappers += 1;
+                    }
                 }
             }
-            ConfigsByPlugin.Remove(pluginInfo);
+            IslandConfigPlugin.Logger?.LogDebug($"Unloaded {unloadedWrappers} config wrappers provided by \"{pluginInfo.Metadata.Name}\"");
         }
     }
 
