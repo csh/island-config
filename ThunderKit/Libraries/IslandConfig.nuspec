@@ -1,0 +1,20 @@
+﻿<?xml version="1.0"?>
+<package >
+    <metadata>
+        <id>IslandConfig</id>
+        <version>0.1.0</version>
+        <authors>csh</authors>
+        <owners>csh</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Configuration API and UI generation BepInEx 5 plugin for Len's Island</description>
+        <repository type="git" url="https://github.com/csh/island-config" />
+        <dependencies>
+            <group targetFramework=".NETStandard2.1" />
+        </dependencies>
+    </metadata>
+    
+    <files>
+        <file src="IslandConfig.dll" target="lib/netstandard2.1" />
+        <file src="IslandConfig.pdb" target="lib/netstandard2.1" />
+    </files>
+</package>

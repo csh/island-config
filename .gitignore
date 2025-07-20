@@ -156,11 +156,19 @@ sysinfo.txt
 
 /[Pp]ackages/Len's Island
 /[Pp]ackages/BepInExPack
-/ThunderKit
 /[Aa]ssets/ThunderKitSettings/Logs
 /[Aa]ssets/ThunderKitSettings/Logs.meta
 
 AssetBundles
-Assets/ExternalAssemblies/Game/*.dll
-Assets/ExternalAssemblies/Game/*.meta
-Assets/ExternalAssemblies/Game.meta
+
+# Exclude unwanted ThunderKit folders
+/ThunderKit/AssetBundleStaging/
+/ThunderKit/Staging/
+
+# Exclude build artifacts in Libraries
+/ThunderKit/Libraries/*.dll
+/ThunderKit/Libraries/*.pdb
+/ThunderKit/Libraries/*.nupkg
+
+# Include .nuspec file
+!ThunderKit/Libraries/IslandConfig.nuspec

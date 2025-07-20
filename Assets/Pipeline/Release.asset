@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Active: 1
   PerManifest: 1
-  ListType: 0
+  ListType: 1
   Manifests:
-  - {fileID: 11400000, guid: 08252974f3d547b3ecc87b18a8e60e97, type: 2}
+  - {fileID: 11400000, guid: 3e8b6134aaa08dd4ea7e49a505e8f57a, type: 2}
   ArchiveType: 1
   Source: <ManifestStagingRoot>
-  Output: IslandConfig.zip
+  Output: <ManifestStagingRoot>\IslandConfig.zip
 --- !u!114 &-1817286758191585558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33,6 +33,29 @@ MonoBehaviour:
   m_Name: StageThunderstoreManifest
   m_EditorClassIdentifier: 
   Active: 1
+--- !u!114 &-1005400040212247020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
+  m_Name: Copy
+  m_EditorClassIdentifier: 
+  Active: 1
+  PerManifest: 1
+  ListType: 1
+  Manifests:
+  - {fileID: 11400000, guid: 3e8b6134aaa08dd4ea7e49a505e8f57a, type: 2}
+  ReplaceDirectory: 1
+  Recursive: 0
+  SourceRequired: 1
+  EstablishDestination: 1
+  Source: <PWD>\README.md
+  Destination: <ManifestStagingRoot>\README.md
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48,9 +71,34 @@ MonoBehaviour:
   Data:
   - {fileID: 4074408234165388825}
   - {fileID: -1817286758191585558}
+  - {fileID: -1005400040212247020}
+  - {fileID: 3756101362912426674}
   - {fileID: -3494869762351509684}
   QuickAccess: 1
   manifest: {fileID: 11400000, guid: 3e8b6134aaa08dd4ea7e49a505e8f57a, type: 2}
+--- !u!114 &3756101362912426674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03063c7a6ec04cc4c82c75cf9bcc8db8, type: 3}
+  m_Name: Copy
+  m_EditorClassIdentifier: 
+  Active: 1
+  PerManifest: 1
+  ListType: 1
+  Manifests:
+  - {fileID: 11400000, guid: 3e8b6134aaa08dd4ea7e49a505e8f57a, type: 2}
+  ReplaceDirectory: 1
+  Recursive: 0
+  SourceRequired: 1
+  EstablishDestination: 1
+  Source: <PWD>\icon.png
+  Destination: <ManifestStagingRoot>\icon.png
 --- !u!114 &4074408234165388825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,5 +112,5 @@ MonoBehaviour:
   m_Name: ExecutePipeline
   m_EditorClassIdentifier: 
   Active: 1
-  OverrideManifest: 1
+  OverrideManifest: 0
   targetpipeline: {fileID: 11400000, guid: 5aa90d9f2a80d3f4fbb2b8df5490fe6c, type: 2}
