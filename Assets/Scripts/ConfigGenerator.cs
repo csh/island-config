@@ -13,10 +13,22 @@ namespace IslandConfig
         {
             foreach (var pair in config)
             {
-                var wrapped = WrapEntry(pluginInfo.Metadata, pair.Value);
-                if (wrapped == null) continue;
-                wrapped.Owner = pluginInfo;
-                yield return wrapped;
+                BepInConfigWrapper wrapped = null;
+                try
+                {
+                    wrapped = WrapEntry(pluginInfo.Metadata, pair.Value);
+                    if (wrapped == null) continue;
+                    wrapped.Owner = pluginInfo;
+                }
+                catch (UnsupportedBindingException ex)
+                {
+                    IslandConfigPlugin.Logger.LogError(ex);
+                }
+
+                if (wrapped is not null)
+                {
+                    yield return wrapped;
+                }
             }
         }
 
