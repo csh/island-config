@@ -76,7 +76,6 @@ namespace IslandConfig
             _harmony.PatchAll(typeof(PauseMenuPatches));
             _harmony.PatchAll(typeof(MainMenuPatches));
             
-            
             var count = 0;
             foreach (var patchedMethod in _harmony.GetPatchedMethods())
             {
