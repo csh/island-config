@@ -61,7 +61,7 @@ namespace IslandConfig
             }
 
             var pluginMeta = pluginInfo.Metadata;
-            IslandConfigPlugin.Logger.LogDebug(
+            IslandConfigPlugin.Logger.LogInfo(
                 $"Registering config UI for plugin {pluginMeta.Name} ({pluginMeta.GUID}@{pluginMeta.Version})");
 
             var builder = new ConfigBuilder();
