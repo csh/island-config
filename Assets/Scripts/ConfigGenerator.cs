@@ -36,6 +36,7 @@ namespace IslandConfig
 
                 not null when type.IsEquivalentTo(typeof(int)) && HasRangeConstraint(configEntry) => new IntSliderConfigItem(configEntry as ConfigEntry<int>),
                 not null when type.IsEquivalentTo(typeof(byte)) && HasRangeConstraint(configEntry) => new ByteSliderConfigItem(configEntry as ConfigEntry<byte>),
+                not null when type.IsEquivalentTo(typeof(long)) && HasRangeConstraint(configEntry) => new LongSliderConfigItem(configEntry as ConfigEntry<long>),
                 not null when type.IsEquivalentTo(typeof(short)) && HasRangeConstraint(configEntry) => new ShortSliderConfigItem(configEntry as ConfigEntry<short>),
                 not null when type.IsEquivalentTo(typeof(float)) && HasRangeConstraint(configEntry) => new FloatSliderConfigItem(configEntry as ConfigEntry<float>),
                 not null when type.IsEquivalentTo(typeof(double)) && HasRangeConstraint(configEntry) => new DoubleSliderConfigItem(configEntry as ConfigEntry<double>),
@@ -47,6 +48,7 @@ namespace IslandConfig
                 
                 not null when type.IsEquivalentTo(typeof(int)) && !HasListConstraint(configEntry) => new IntTextInput(configEntry as ConfigEntry<int>),
                 not null when type.IsEquivalentTo(typeof(byte)) && !HasListConstraint(configEntry) => new ByteTextInput(configEntry as ConfigEntry<byte>),
+                not null when type.IsEquivalentTo(typeof(long)) && !HasListConstraint(configEntry) => new LongTextInput(configEntry as ConfigEntry<long>),
                 not null when type.IsEquivalentTo(typeof(short)) && !HasListConstraint(configEntry) => new ShortTextInput(configEntry as ConfigEntry<short>),
                 not null when type.IsEquivalentTo(typeof(float)) && !HasListConstraint(configEntry) => new FloatTextInput(configEntry as ConfigEntry<float>),
                 not null when type.IsEquivalentTo(typeof(double)) && !HasListConstraint(configEntry) => new DoubleTextInput(configEntry as ConfigEntry<double>),

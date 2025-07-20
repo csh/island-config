@@ -116,4 +116,16 @@ namespace IslandConfig.UI
             return int.TryParse(value, out _);
         }
     }
+    
+    public class LongTextInput : NumericTextConfigItem<long>
+    {
+        public LongTextInput(ConfigEntry<long> configEntry) : base(configEntry)
+        {
+        }
+
+        public override bool ValidateInput(string value)
+        {
+            return long.TryParse(value, out _);
+        }
+    }
 }
