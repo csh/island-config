@@ -147,6 +147,11 @@ namespace IslandConfig.UI
             remove => ConfigEntry.SettingChanged -= value;
         }
 
+        void IGenericConfigurable.ResetToDefault()
+        {
+            CurrentBoxedValue = ConfigEntry.DefaultValue;
+        }
+
         internal override GameObject CreatePrefab(TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
         {
             throw new NotImplementedException("TODO: Prefab loading and instantiation");
@@ -177,5 +182,6 @@ namespace IslandConfig.UI
         string Section { get; }
         string Description { get; }
         event System.EventHandler SettingChanged;
+        void ResetToDefault();
     }
 }
