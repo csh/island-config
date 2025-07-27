@@ -15,15 +15,17 @@ namespace IslandConfig
         internal static readonly ConditionalWeakTable<PluginInfo, List<BepInConfigWrapper>> ConfigsByPlugin = new();
         internal static readonly ConditionalWeakTable<PluginInfo, Dictionary<Type, Func<ConfigEntryBase, BepInConfigWrapper>>> CustomConfigElements = new();
 
-#if UNITY_EDITOR
-        private static bool _generatedConfigs = true;
-#else
-        private static bool _generatedConfigs;
-#endif
+        private static bool _shouldGenerateConfigs = true;
         
+        private static bool ShouldGenerateConfigs
+        {
+            get => Chainloader.PluginInfos?["com.bepis.bepinex.scriptengine"] is not null || _shouldGenerateConfigs;
+            set => _shouldGenerateConfigs = value;
+        }
+
         internal static void GenerateConfigs()
         {
-            if (_generatedConfigs) return;
+            if (!ShouldGenerateConfigs) return;
 
             foreach (var pluginInfo in Chainloader.PluginInfos.Values)
             {
@@ -44,7 +46,7 @@ namespace IslandConfig
                 ConfigsByPlugin.Add(pluginInfo, wrapped.ToList());
             }
 
-            _generatedConfigs = true;
+            ShouldGenerateConfigs = false;
         }
 
         public static void Register(Action<ConfigBuilder> build)
