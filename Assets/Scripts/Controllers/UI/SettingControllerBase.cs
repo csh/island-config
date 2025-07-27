@@ -3,6 +3,7 @@ using IslandConfig.UI;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace IslandConfig.Controllers.UI
 {
@@ -13,15 +14,16 @@ namespace IslandConfig.Controllers.UI
         [SerializeField] protected TextMeshProUGUI label;
         [SerializeField] protected TextMeshProUGUI hoverName;
         [SerializeField] protected TextMeshProUGUI hoverDesc;
+        [SerializeField] protected Button resetButton;
         
-        internal abstract void ForceUpdateElement();
+        public abstract void ForceUpdateElement();
     }
     
     public abstract class SettingControllerBase<T> : SettingsControllerBase, IPointerEnterHandler where T: IGenericConfigurable
     {
         protected T Definition;
 
-        internal virtual void Initialize(T definition, TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
+        public void Initialize(T definition, TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
         {
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
             hoverName = hoverNameTarget;
@@ -29,6 +31,11 @@ namespace IslandConfig.Controllers.UI
             label.text = definition.Name;
             
             Definition.SettingChanged += OnSettingChanged;
+        }
+
+        private void Awake()
+        {
+            resetButton?.onClick.AddListener(SetToDefault);
         }
 
         protected void OnDestroy()
@@ -40,6 +47,12 @@ namespace IslandConfig.Controllers.UI
         }
 
         protected abstract void OnSettingChanged(object sender, EventArgs e);
+
+        private void SetToDefault()
+        {
+            Definition.ResetToDefault();
+            ForceUpdateElement();
+        }
         
         public void OnPointerEnter(PointerEventData eventData)
         {

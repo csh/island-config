@@ -372,10 +372,12 @@ namespace IslandConfig.Controllers
                 configSection.GetComponent<SectionControllerScript>().Initialize(group.Key);
 #endif
                 
+                var sectionItems = configSection.transform.Find("Section Items");
+                
                 foreach (var wrapper in group)
                 {
                     var configItem = wrapper.CreatePrefab(hoverTextName, hoverTextDescription);
-                    configItem.transform.SetParent(configSection.transform, false);
+                    configItem.transform.SetParent(sectionItems, false);
                 }
             }
         }

@@ -1,6 +1,5 @@
 using System;
 using IslandConfig.UI;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,11 +8,10 @@ namespace IslandConfig.Controllers.UI
     internal class CheckboxControllerScript : SettingControllerBase<CheckboxConfigItem>
     {
         [SerializeField] private Toggle toggle;
-        
-        internal override void Initialize(CheckboxConfigItem definition, TextMeshProUGUI hoverNameTarget, TextMeshProUGUI hoverDescTarget)
+
+        private void Start()
         {
-            base.Initialize(definition, hoverNameTarget, hoverDescTarget);
-            toggle.isOn = definition.Value;
+            toggle?.SetIsOnWithoutNotify(Definition.Value);
         }
 
         private void OnEnable() => toggle?.onValueChanged.AddListener(OnToggleChanged);
@@ -32,7 +30,7 @@ namespace IslandConfig.Controllers.UI
             toggle.isOn = Definition.Value;
         }
 
-        internal override void ForceUpdateElement()
+        public override void ForceUpdateElement()
         {
             if (toggle is null || Definition is null) return;
             toggle.SetIsOnWithoutNotify(Definition.Value);

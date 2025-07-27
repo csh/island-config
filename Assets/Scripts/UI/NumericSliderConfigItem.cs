@@ -129,4 +129,11 @@ namespace IslandConfig.UI
         {
         }
     }
+    
+    public class LongSliderConfigItem : NumericSliderConfigItem<long>
+    {
+        public LongSliderConfigItem(ConfigEntry<long> configEntry) : base(configEntry, true, long.MinValue, long.MaxValue)
+        {
+        }
+    }
 }

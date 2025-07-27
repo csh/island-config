@@ -15,15 +15,17 @@ namespace IslandConfig
         internal static readonly ConditionalWeakTable<PluginInfo, List<BepInConfigWrapper>> ConfigsByPlugin = new();
         internal static readonly ConditionalWeakTable<PluginInfo, Dictionary<Type, Func<ConfigEntryBase, BepInConfigWrapper>>> CustomConfigElements = new();
 
-#if UNITY_EDITOR
-        private static bool _generatedConfigs = true;
-#else
-        private static bool _generatedConfigs;
-#endif
+        private static bool _shouldGenerateConfigs = true;
         
+        private static bool ShouldGenerateConfigs
+        {
+            get => Chainloader.PluginInfos?["com.bepis.bepinex.scriptengine"] is not null || _shouldGenerateConfigs;
+            set => _shouldGenerateConfigs = value;
+        }
+
         internal static void GenerateConfigs()
         {
-            if (_generatedConfigs) return;
+            if (!ShouldGenerateConfigs) return;
 
             foreach (var pluginInfo in Chainloader.PluginInfos.Values)
             {
@@ -44,7 +46,7 @@ namespace IslandConfig
                 ConfigsByPlugin.Add(pluginInfo, wrapped.ToList());
             }
 
-            _generatedConfigs = true;
+            ShouldGenerateConfigs = false;
         }
 
         public static void Register(Action<ConfigBuilder> build)
@@ -191,6 +193,74 @@ namespace IslandConfig
             return this;
         }
 
+        #region Numeric text inputs
+
+        public ConfigBuilder WithNumericInput(ConfigEntry<byte> configEntry, string section = null, string label = null,
+            string description = null)
+        {
+            var wrapper = new ByteTextInput(configEntry);
+            SetCustomAttributes(wrapper, section, label, description);
+            Configs[configEntry] = wrapper;
+            return this;
+        }
+
+        public ConfigBuilder WithNumericInput(ConfigEntry<short> configEntry, string section = null, string label = null,
+            string description = null)
+        {
+            var wrapper = new ShortTextInput(configEntry);
+            SetCustomAttributes(wrapper, section, label, description);
+            Configs[configEntry] = wrapper;
+            return this;
+        }
+
+        public ConfigBuilder WithNumericInput(ConfigEntry<int> configEntry, string section = null, string label = null,
+            string description = null)
+        {
+            var wrapper = new IntTextInput(configEntry);
+            SetCustomAttributes(wrapper, section, label, description);
+            Configs[configEntry] = wrapper;
+            return this;
+        }
+
+        public ConfigBuilder WithNumericInput(ConfigEntry<long> configEntry, string section = null, string label = null,
+            string description = null)
+        {
+            var wrapper = new LongTextInput(configEntry);
+            SetCustomAttributes(wrapper, section, label, description);
+            Configs[configEntry] = wrapper;
+            return this;
+        }
+
+        public ConfigBuilder WithNumericInput(ConfigEntry<float> configEntry, string section = null, string label = null,
+            string description = null)
+        {
+            var wrapper = new FloatTextInput(configEntry);
+            SetCustomAttributes(wrapper, section, label, description);
+            Configs[configEntry] = wrapper;
+            return this;
+        }
+
+        public ConfigBuilder WithNumericInput(ConfigEntry<double> configEntry, string section = null, string label = null,
+            string description = null)
+        {
+            var wrapper = new DoubleTextInput(configEntry);
+            SetCustomAttributes(wrapper, section, label, description);
+            Configs[configEntry] = wrapper;
+            return this;
+        }
+
+        public ConfigBuilder WithNumericInput(ConfigEntry<decimal> configEntry, string section = null, string label = null,
+            string description = null)
+        {
+            var wrapper = new DecimalTextInput(configEntry);
+            SetCustomAttributes(wrapper, section, label, description);
+            Configs[configEntry] = wrapper;
+            return this;
+        }
+
+        #endregion
+
+        
         #region Numeric sliders
 
         public ConfigBuilder WithSlider(ConfigEntry<byte> configEntry, string section = null, string label = null,
@@ -215,6 +285,15 @@ namespace IslandConfig
             string description = null)
         {
             var wrapper = new IntSliderConfigItem(configEntry);
+            SetCustomAttributes(wrapper, section, label, description);
+            Configs[configEntry] = wrapper;
+            return this;
+        }
+
+        public ConfigBuilder WithSlider(ConfigEntry<long> configEntry, string section = null, string label = null,
+            string description = null)
+        {
+            var wrapper = new LongSliderConfigItem(configEntry);
             SetCustomAttributes(wrapper, section, label, description);
             Configs[configEntry] = wrapper;
             return this;
